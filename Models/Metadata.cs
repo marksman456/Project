@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
 // 建議將所有 Metadata 放在同一個命名空間下，請確認這是否為你的專案命名空間
-namespace XiangYunSaleSystem.Models
+namespace Project.Models
 {
 
     //======================== Member Metadata ========================
@@ -75,16 +75,23 @@ namespace XiangYunSaleSystem.Models
         [Display(Name = "商品料號(SKU)")]
         [Required(ErrorMessage = "商品料號為必填項。")]
         [StringLength(50)]
-        public string ProductSku { get; set; } = null!;
+        public string ProductSKU { get; set; } = null!;
 
         [Display(Name = "商品名稱")]
         [Required(ErrorMessage = "商品名稱為必填項。")]
         [StringLength(100)]
         public string ProductName { get; set; } = null!;
 
+
+        [Display(Name = "商品描述")]
+        public string? Description { get; set; }
+
+        [Display(Name = "商品圖片")]
+        public string? ProductImage { get; set; }
+
         [Display(Name = "商品型號")]
         [Required]
-        public int ProductModelId { get; set; }
+        public int ProductModelID { get; set; }
 
         [Display(Name = "售價")]
         [Required(ErrorMessage = "售價為必填項。")]
