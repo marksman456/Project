@@ -100,6 +100,24 @@ namespace Project.Models
         public decimal Price { get; set; }
     }
 
+    [ModelMetadataType(typeof(ProductModelMetadata))]
+
+    partial class ProductModel { }
+
+    public class ProductModelMetadata
+    {
+        [Display(Name ="商品型號編號")]
+        public int ProductModelID { get; set; }
+
+        [Display(Name ="商品型號名稱")]
+        public string ProductModelName { get; set; } = null!;
+       
+        public int CategoryID { get; set; }
+
+        [Display(Name = "商品品牌")]
+        public string? Brand { get; set; }
+
+    }
     //======================== Order Metadata ========================
     [ModelMetadataType(typeof(OrderMetadata))]
     public partial class Order { }
