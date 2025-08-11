@@ -13,7 +13,7 @@ using Project.Models;
 
 
 
-namespace Project.Controllers // 請確認你的命名空間
+namespace Project.Controllers 
 {
     public class ProductsController : Controller
     {
@@ -27,7 +27,7 @@ namespace Project.Controllers // 請確認你的命名空間
             _webHostEnvironment = webHostEnvironment; 
         }
 
-        // GET: Products
+       
         public async Task<IActionResult> Index()
         {
             
@@ -35,7 +35,7 @@ namespace Project.Controllers // 請確認你的命名空間
             return View(await xiangYunDbContext.ToListAsync());
         }
 
-        // GET: Products/Details/5
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -47,7 +47,7 @@ namespace Project.Controllers // 請確認你的命名空間
             return View(product);
         }
 
-        // GET: Products/Create
+        
         public IActionResult Create()
         {
             
@@ -55,7 +55,7 @@ namespace Project.Controllers // 請確認你的命名空間
             return View();
         }
 
-        // POST: Products/Create
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductSKU,ProductName,Description,ProductModelID,Price")] Product product, IFormFile? formFile)
