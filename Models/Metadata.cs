@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
-// 建議將所有 Metadata 放在同一個命名空間下，請確認這是否為你的專案命名空間
 namespace Project.Models
 {
 
@@ -15,6 +14,7 @@ namespace Project.Models
         [Display(Name = "會員編號")]
         [Required(ErrorMessage = "會員編號為必填項。")]
         [StringLength(20)]
+        [RegularExpression(@"^M\d{4}[0-9]{4}$", ErrorMessage = "會員編號格式應為 'M' 接年分再接 4 碼流水號 EX:M20250001。")]
         public string MemberNumber { get; set; } = null!;
 
         [Display(Name = "會員姓名")]
@@ -38,7 +38,15 @@ namespace Project.Models
 
         [Display(Name = "生日")]
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime? Birthday { get; set; }
+
+        [Display(Name="性別")]
+        public string? Gender { get; set; }
+
+        [Display(Name = "註記")]
+        [DataType(DataType.MultilineText)]
+        public string? Note { get; set; }
     }
 
     //======================== Employee Metadata ========================
