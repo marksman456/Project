@@ -1,0 +1,41 @@
+﻿@model Project.Models.Member
+
+@{
+    ViewData["Title"] = "會員詳細資料";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h2 class="text-center mb-0">@ViewData["Title"]</h2>
+        </div>
+        <div class="card-body">
+            <h3 class="card-title text-primary">@Html.DisplayFor(model => model.Name)</h3>
+            <h6 class="card-subtitle mb-3 text-muted">@Html.DisplayFor(model => model.MemberNumber)</h6>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Phone)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Phone)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Address)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Address)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Birthday)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Birthday)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Gender)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Gender)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Note)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Note)</dd>
+            </dl>
+        </div>
+        <div class="card-footer text-center">
+            <a asp-action="Edit" asp-route-id="@Model.MemberID" class="btn btn-primary">編輯</a>
+            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+        </div>
+    </div>
+</div>

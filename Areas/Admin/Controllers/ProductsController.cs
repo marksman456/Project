@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting; 
-using Microsoft.AspNetCore.Http;   
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,8 +13,10 @@ using Project.Models;
 
 
 
-namespace Project.Controllers 
+namespace Project.Areas.Admin.Controllers 
 {
+
+    [Area("Admin")]
     public class ProductsController : Controller
     {
         private readonly XiangYunDbContext _context;

@@ -44,10 +44,16 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.MemberID">編輯</a> |
-                    <a asp-action="Details" asp-route-id="@item.MemberID">詳細</a> |
-                    <a asp-action="Delete" asp-route-id="@item.MemberID">刪除</a>
+                <td class="d-flex">
+
+                    <a asp-action="Details" asp-route-id="@item.MemberID" class="btn btn-sm btn-outline-primary">詳細</a>
+
+
+                    <form asp-action="Delete" asp-route-id="@item.MemberID">
+
+                        <input type="submit" value="刪除" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除(@item.Name)?')" />
+
+                    </form>
                 </td>
             </tr>
         }

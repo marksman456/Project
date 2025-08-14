@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 
-namespace Project.Controllers
+namespace Project.Areas.Admin.Controllers
 {
+
+    [Area("Admin")]
     public class MembersController : Controller
     {
         private readonly XiangYunDbContext _context;
@@ -86,6 +88,15 @@ namespace Project.Controllers
             {
                 return NotFound();
             }
+
+           var genderList = new List<SelectListItem>
+             {
+              new SelectListItem { Value = "M", Text = "男性" },
+             new SelectListItem { Value = "F", Text = "女性" },
+             new SelectListItem { Value = "O", Text = "其他" }
+             };
+            ViewBag.GenderList = genderList;
+
             return View(member);
         }
 
@@ -100,6 +111,8 @@ namespace Project.Controllers
             {
                 return NotFound();
             }
+
+    
 
             if (ModelState.IsValid)
             {

@@ -9,8 +9,8 @@
 <p class="text-end">
     <a asp-action="Create" class="btn btn-primary">新增商品</a>
 </p>
-<table class="table table-hover">
-    <thead>
+<table class="table table-hover shadow-sm">
+    <thead class="table-light">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.ProductImage)
@@ -55,10 +55,13 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
-                <td>
-                  
-                    <a asp-action="Details" asp-route-id="@item.ProductID">詳細</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ProductID">刪除</a>
+                <td class="d-flex">
+
+                    <a asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-sm btn-outline-primary">詳細</a>
+
+                    <form asp-action="Delete" asp-route-id="@item.ProductID">
+                        <input type="submit" value="刪除" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除(@item.ProductName)嗎?')" />
+                    </form>
                 </td>
             </tr>
         }

@@ -6,7 +6,6 @@
 
 <h1 class="display-5 text-center">@ViewData["Title"]</h1>
 
-
 <hr />
 
 <div class="row justify-content-center">
@@ -50,17 +49,14 @@
                 <div class="col-md-5">
                     <div class="form-group mb-3">
                         <label class="control-label">更換圖片</label>
-                        <input type="file" name="formFile" id="formFile" class="form-control" accept="image/*" />
+                        <input type="file" name="formFile" id="formFile" class="form-control"/>
                     </div>
                     <div class="text-center">
-                     @if (@Model.ProductImage != null){
                        
-                        
-                            <img id="imagePreview" src="@Model.ProductImage"  class="img-fluid rounded shadow-sm" style="max-height: 250px;" />
-                     }
+                            <img id="imagePreview" src="" class="img-fluid rounded shadow-sm" style="max-height: 250px;" />
                        
-                        
                     </div>
+                  
                 </div>
             </div>
 
@@ -79,12 +75,12 @@
 
     <script>
         $(document).ready(function () {
-            
             $('#formFile').on('change', function (event) {
                 if (this.files && this.files[0]) {
                     var reader = new FileReader();
                     reader.onload = function (e) {
-                        $('#imagePreview').attr('src', e.target.result).show();
+                        var img = $('#imagePreview');
+                        img.attr('src', e.target.result).show();
                     };
                     reader.readAsDataURL(this.files[0]);
                 }

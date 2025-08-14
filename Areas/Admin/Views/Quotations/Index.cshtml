@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Project.Models.Quotation>
+
+@{
+    ViewData["Title"] = "報價單列表";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">新增報價單</a>
+</p>
+<table class="table table-hover shadow-sm">
+    <thead class="table-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.QuotationNumber)
+            </th>
+            <th>
+                @* 修改：顯示客戶姓名 *@
+                @Html.DisplayNameFor(model => model.Member.Name)
+            </th>
+            <th>
+                @* 修改：顯示負責員工姓名 *@
+                @Html.DisplayNameFor(model => model.Employee.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuoteDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QuotationNumber)
+                </td>
+                <td>
+                    @* 修改：顯示客戶姓名 *@
+                    @Html.DisplayFor(modelItem => item.Member.Name)
+                </td>
+                <td>
+                    @* 修改：顯示負責員工姓名 *@
+                    @Html.DisplayFor(modelItem => item.Employee.Name)
+                </td>
+                <td>
+                    @* 將日期格式化為 yyyy-MM-dd *@
+                    @item.QuoteDate.ToString("yyyy-MM-dd")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="d-flex">
+                    <a asp-action="Edit" asp-route-id="@item.QuotationID" class="btn btn-sm btn-outline-primary">編輯</a>
+                    <a asp-action="Details" asp-route-id="@item.QuotationID" class="btn btn-sm btn-outline-info">詳細</a>
+                    <form asp-action="Delete" asp-route-id="@item.QuotationID">
+                        <input type="submit"  value="刪除" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除(@item.QuotationNumber)嗎?')"/>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
