@@ -51,9 +51,14 @@ namespace Project.Areas.Admin.Controllers
         // GET: Admin/Quotations/Create
         public IActionResult Create()
         {
-            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "EmployeeID");
-            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "MemberID");
-            return View();
+            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "Name");
+            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "Name");
+            var newQuotation = new Quotation
+            {
+                QuoteDate =DateOnly.FromDateTime(DateTime.Now),
+                Status = "報價中" // 預設狀態
+            };
+            return View(newQuotation);
         }
 
         // POST: Admin/Quotations/Create
