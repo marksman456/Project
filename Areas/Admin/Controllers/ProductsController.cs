@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
+using Project.Models.DTOs;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 
@@ -192,6 +193,32 @@ namespace Project.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        // 【已重構為使用 DTO】: AJAX 商品搜尋 API
+        [HttpGet]
+        public async Task<IActionResult> SearchProducts(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+            {
+                return Json(new List<ProductSearchDTO>());
+            }
+
+            // 根據傳入的搜尋字詞 (term)，查詢商品名稱或 SKU 包含該字詞的商品
+            var products = await _context.Product
+                .Where(p => p.ProductName.Contains(keyword) || p.ProductSKU.Contains(keyword))
+                // 【修改】: 將 new { ... } 改為 new ProductSearchDTO { ... }
+                .Select(p => new ProductSearchDTO
+                {
+                    Id = p.ProductID,
+                    Label = p.ProductName + " (" + p.ProductSKU + ")",
+                    Value = p.ProductName,
+                    Price = p.Price
+                })
+                .Take(10) // 最多只回傳 10 筆結果
+                .ToListAsync();
+
+            return Json(products);
+        }
         private bool ProductExists(int id)
         {
             return _context.Product.Any(e => e.ProductID == id);
