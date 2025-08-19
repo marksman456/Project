@@ -1,71 +1,202 @@
 ﻿@model Project.Models.Quotation
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "新增報價單";
 }
 
-<h1>Create</h1>
-
-<h4>Quotation</h4>
+<h1 class="display-5 text-center">@ViewData["Title"]</h1>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="QuotationNumber" class="control-label"></label>
-                <input asp-for="QuotationNumber" class="form-control" />
-                <span asp-validation-for="QuotationNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MemberID" class="control-label"></label>
-                <select asp-for="MemberID" class ="form-control" asp-items="ViewBag.MemberID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmployeeID" class="control-label"></label>
-                <select asp-for="EmployeeID" class ="form-control" asp-items="ViewBag.EmployeeID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastUpdate" class="control-label"></label>
-                <input asp-for="LastUpdate" class="form-control" />
-                <span asp-validation-for="LastUpdate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="QuoteDate" class="control-label"></label>
-                <input asp-for="QuoteDate" class="form-control" />
-                <span asp-validation-for="QuoteDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ValidityPeriod" class="control-label"></label>
-                <input asp-for="ValidityPeriod" class="form-control" />
-                <span asp-validation-for="ValidityPeriod" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsTransferred" /> @Html.DisplayNameFor(model => model.IsTransferred)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Note" class="control-label"></label>
-                <input asp-for="Note" class="form-control" />
-                <span asp-validation-for="Note" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @* --- 1. 報價單主檔資訊 --- *@
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            報價單主檔
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="QuotationNumber" class="control-label"></label>
+                    <input asp-for="QuotationNumber" class="form-control" placeholder="系統將自動產生" readonly />
+                    <span asp-validation-for="QuotationNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="QuoteDate" class="control-label"></label>
+                    <input asp-for="QuoteDate" class="form-control" type="date" />
+                    <span asp-validation-for="QuoteDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="Status" class="control-label"></label>
+                    <input asp-for="Status" class="form-control" readonly />
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="MemberID" class="control-label"></label>
+                    <select asp-for="MemberID" class="form-select" asp-items="ViewBag.MemberID">
+                        <option value="">-- 請選擇客戶 --</option>
+                    </select>
+                    <span asp-validation-for="MemberID" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="EmployeeID" class="control-label"></label>
+                    <select asp-for="EmployeeID" class="form-select" asp-items="ViewBag.EmployeeID">
+                        <option value="">-- 請選擇負責員工 --</option>
+                    </select>
+                    <span asp-validation-for="EmployeeID" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- 2. 報價單明細 --- *@
+    <div class="card shadow-sm">
+        <div class="card-header">
+            報價單明細
+        </div>
+        <div class="card-body">
+            @* 商品搜尋區塊 (下一步 AJAX 會用到) *@
+            <div class="row mb-3">
+                <div class="col-md-10">
+                    <label class="form-label">搜尋商品</label>
+                    <input type="text" id="productSearch" class="form-control" placeholder="輸入商品名稱或SKU進行搜尋..." />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" id="addProductBtn" class="btn btn-success">加入品項</button>
+                </div>
+            </div>
+
+            @* 商品明細表格 (下一步 jQuery 會動態新增內容到 tbody) *@
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:40%">商品名稱</th>
+                        <th style="width:15%">單價</th>
+                        <th style="width:15%">數量</th>
+                        <th style="width:20%">小計</th>
+                        <th style="width:10%">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="quotationDetailsTableBody">
+                    @* 這裡的內容將由 jQuery 動態產生 *@
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-end">
+            <h4>總計金額: <span id="grandTotal">0</span> 元</h4>
+        </div>
+    </div>
+
+    <div class="form-group mt-4 text-center">
+        <input type="submit" value="建立報價單" class="btn btn-primary btn-lg" />
+        <a asp-area="Admin" asp-controller="Quotations" asp-action="Index" class="btn btn-secondary btn-lg">返回列表</a>
+    </div>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+
+    @* 【新增】: 商品搜尋 Autocomplete 的 jQuery 腳本 *@
+    <script>
+        $(document).ready(function () {
+            
+            // 用來暫存使用者選擇的商品資訊
+            let selectedProduct = null;
+
+            $("#productSearch").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchProducts", "Products", new { Area = "Admin" })", // 指向我們的 API
+                        dataType: "json",
+                        data: {
+                            keyword: request.term // 將使用者輸入的文字作為 term 參數
+                        },
+                        success: function (data) {
+                            response(data); // 將回傳的 JSON 資料交給 Autocomplete 顯示
+                        }
+                    });
+                },
+                minLength: 2, // 使用者至少輸入2個字元才觸發搜尋
+                select: function (event, ui) {
+                    // 當使用者從下拉選單中選擇一項時觸發
+                    console.log("已選擇: ", ui.item); // 在瀏覽器主控台印出資訊，方便除錯
+                    selectedProduct = ui.item; // 將選擇的商品物件存起來
+                    
+                    // 我們可以順便將價格顯示在旁邊的欄位，但這是下一步的功能
+                    // $("#productPrice").val(ui.item.price);
+
+               // 阻止預設行為，但語意更清晰 (手動控制覆蓋預設行為內容)
+                         $("#productSearch").val(ui.item.label);
+                            event.preventDefault(); 
+                }
+            });
+
+            // 清除搜尋框時，也清除已選擇的商品
+            $("#productSearch").on("keyup", function(){
+                if($(this).val() === ""){
+                    selectedProduct = null;
+                }
+            });
+
+            // (下一步我們會在這裡寫 #addProductBtn 的 click 事件)
+              // 【新增】: 點擊 "加入品項" 按鈕的事件
+            $('#addProductBtn').on('click', function() {
+
+                // 1. 檢查是否已選擇商品
+                if (selectedProduct == null) {
+                    alert('請先搜尋並從下拉選單中選擇一個商品！');
+                    return; // 中止執行
+                }
+
+                // 2. 檢查該商品是否已存在於明細中
+                // 我們用商品ID來檢查，避免重複加入
+                const isExisting = $(`#quotationDetailsTableBody input[name$=".ProductID"][value="${selectedProduct.id}"]`).length > 0;
+                if (isExisting) {
+                    alert('此商品已存在於報價單中，請直接修改數量。');
+                    return;
+                }
+
+                // 3. 準備 Table Row 的 HTML
+                const index = $('#quotationDetailsTableBody tr').length; // 取得目前的列數，作為新一列的索引
+                const newRow = `
+                    <tr>
+                        <td>
+                            @* 為了將資料回傳給 Controller，我們需要隱藏的 input *@
+                            <input type="hidden" name="QuotationDetails[${index}].ProductID" value="${selectedProduct.id}" />
+                            ${selectedProduct.label}
+                        </td>
+                        <td>
+                            <input type="number" name="QuotationDetails[${index}].Price" class="form-control price-input" value="${selectedProduct.price}" step="0.01" />
+                        </td>
+                        <td>
+                            <input type="number" name="QuotationDetails[${index}].Quantity" class="form-control quantity-input" value="1" min="1" />
+                        </td>
+                        <td class="subtotal">
+                            ${selectedProduct.price}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-danger remove-item-btn">移除</button>
+                        </td>
+                    </tr>`;
+
+                // 4. 將新建立的 Row 附加到 Table Body 中
+                $('#quotationDetailsTableBody').append(newRow);
+
+                // 5. 清理現場，準備下一次新增
+                selectedProduct = null;
+                $('#productSearch').val('').focus(); // 清空搜尋框並讓它取得焦點
+
+                // (下一步我們會在這裡加入計算總價的函式)
+            });
+
+        });
+        });
+    </script>
 }
