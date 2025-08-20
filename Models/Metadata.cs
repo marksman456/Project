@@ -138,11 +138,11 @@ namespace Project.Models
 
         [Display(Name = "訂購會員")]
         [Required]
-        public int MemberId { get; set; }
+        public int MemberID { get; set; }
 
         [Display(Name = "負責員工")]
         [Required]
-        public int EmployeeId { get; set; }
+        public int EmployeeID { get; set; }
 
         [Display(Name = "訂單日期")]
         [DataType(DataType.DateTime)]
@@ -161,15 +161,15 @@ namespace Project.Models
 
         [Display(Name = "客戶")]
         [Required]
-        public int MemberId { get; set; }
+        public int MemberID { get; set; }
 
         [Display(Name = "報價員工")]
         [Required]
-        public int EmployeeId { get; set; }
+        public int EmployeeID { get; set; }
 
         [Display(Name = "報價日期")]
         [DataType(DataType.Date)]
-        public DateTime QuoteDate { get; set; }
+        public DateOnly QuoteDate { get; set; }
 
         [Display(Name = "狀態")]
         [Required]
@@ -188,7 +188,7 @@ namespace Project.Models
 
         [Display(Name = "供應商")]
         [Required]
-        public int SupplierId { get; set; }
+        public int SupplierID { get; set; }
 
         [Display(Name = "預計到貨日")]
         [DataType(DataType.Date)]

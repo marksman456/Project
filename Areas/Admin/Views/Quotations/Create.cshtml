@@ -19,7 +19,7 @@
             <div class="row">
                 <div class="col-md-4 form-group mb-3">
                     <label asp-for="QuotationNumber" class="control-label"></label>
-                    <input asp-for="QuotationNumber" class="form-control" placeholder="系統將自動產生" readonly />
+                    <input id="QuotationNumber" name="QuotationNumber" class="form-control" placeholder="系統將自動產生" readonly />
                     <span asp-validation-for="QuotationNumber" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 form-group mb-3">
@@ -36,14 +36,14 @@
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="MemberID" class="control-label"></label>
-                    <select asp-for="MemberID" class="form-select" asp-items="ViewBag.MemberID">
+                    <select asp-for="MemberID" class="form-select" asp-items="ViewBag.MemberName">
                         <option value="">-- 請選擇客戶 --</option>
                     </select>
                     <span asp-validation-for="MemberID" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="EmployeeID" class="control-label"></label>
-                    <select asp-for="EmployeeID" class="form-select" asp-items="ViewBag.EmployeeID">
+                    <select asp-for="EmployeeID" class="form-select" asp-items="ViewBag.EmployeeName">
                         <option value="">-- 請選擇負責員工 --</option>
                     </select>
                     <span asp-validation-for="EmployeeID" class="text-danger"></span>
@@ -194,8 +194,8 @@
                 $('#productSearch').val('').focus(); // 清空搜尋框並讓它取得焦點
 
                  calculateTotals(); // 【新增】加入後，立刻計算一次總價
-               
-             
+
+           
             });
 
                // (下一步我們會在這裡加入計算總價的函式)
@@ -204,7 +204,7 @@
              $('#quotationDetailsTableBody').on('click', '.remove-item-btn', function() {
                 $(this).closest('tr').remove();
                 calculateTotals(); // 移除後，也要重新計算總價
-                // (下一步我們會在這裡加入重新編排索引的邏輯)
+                reindexTableRows(); // 移除後，重新編排索引
             });
 
             // 【新增】: 2. 即時計算金額功能 (使用事件委派)
@@ -225,6 +225,20 @@
                     grandTotal += parseFloat(subtotalText) || 0;
                 });
                 $('#grandTotal').text(grandTotal.toFixed(2)); // 更新總計金額
+            }
+                   // 【新功能 4】: 重新編排索引的函式
+            function reindexTableRows() {
+               $('#quotationDetailsTableBody').find('tr').each(function(newIndex) {
+                    // 找到此列中所有的 input 和 select 元素
+                    $(this).find('input, select').each(function() {
+                        const oldName = $(this).attr('name');
+                        if (oldName) {
+                            // 使用正規表達式，將舊的索引 ([0], [1]...) 替換為新的索引
+                            const newName = oldName.replace(/\[\d+\]/, `[${newIndex}]`);
+                            $(this).attr('name', newName);
+                        }
+                    });
+                });
             }
         });
    

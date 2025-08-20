@@ -51,11 +51,11 @@ namespace Project.Areas.Admin.Controllers
         // GET: Admin/Quotations/Create
         public IActionResult Create()
         {
-            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "Name");
-            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "Name");
+            ViewData["EmployeeName"] = new SelectList(_context.Employee, "EmployeeID", "Name");
+            ViewData["MemberName"] = new SelectList(_context.Member, "MemberID", "Name");
             var newQuotation = new Quotation
             {
-                QuoteDate =DateOnly.FromDateTime(DateTime.Now),
+                QuoteDate =DateOnly.FromDateTime(DateTime.Today),
                 Status = "報價中" // 預設狀態
             };
             return View(newQuotation);
@@ -64,18 +64,53 @@ namespace Project.Areas.Admin.Controllers
         // POST: Admin/Quotations/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Quotations/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("QuotationID,QuotationNumber,MemberID,EmployeeID,CreatedDate,LastUpdate,QuoteDate,ValidityPeriod,Status,IsTransferred,Note")] Quotation quotation)
+        // 【修改】為了能接收到完整的明細資料，我們稍微調整 Bind 的內容，或直接接收 Quotation 物件
+        // 這裡我們直接接收 Quotation 物件，讓模型繫結器自動處理主檔與明細
+        public async Task<IActionResult> Create(Quotation quotation)
         {
+            // 移除 QuotationNumber 的模型驗證，因為它是後端產生的
+            ModelState.Remove("QuotationNumber");
+           
+            // 手動移除對關聯實體的驗證，因為我們只需要ID
+            ModelState.Remove("Member");
+            ModelState.Remove("Employee");
+
             if (ModelState.IsValid)
             {
+                // --- 1. 產生報價單號 (如之前討論的) ---
+                string datePart = DateTime.Today.ToString("yyyyMMdd");
+                int dailyCount = await _context.Quotation.CountAsync(q => q.QuoteDate == DateOnly.FromDateTime(DateTime.Today));
+                string sequencePart = (dailyCount + 1).ToString("D3"); // 格式化為三位數流水號
+                quotation.QuotationNumber = $"Q-{datePart}-{sequencePart}";
+
+                // --- 2. 設定預設狀態 ---
+                quotation.Status = "報價中";
+                quotation.CreatedDate = DateTime.Now; // 設定建立時間
+             
+
+                // --- 3. 將組合好的 Quotation 物件 (包含主檔與明細) 加入到 DbContext ---
                 _context.Add(quotation);
+
+               
+
+                // --- 4. 執行儲存 ---
+                // Entity Framework Core 會非常聰明地處理這一切：
+                // a. 它會先執行一筆 INSERT INTO Quotations... 指令來新增主檔。
+                // b. 取得剛剛新增的 QuotationID。
+                // c. 迭代 quotation.QuotationDetails 集合中的每一個品項。
+                // d. 執行多筆 INSERT INTO QuotationDetails... 指令，並自動填入正確的 QuotationID 作為外鍵。
+                // e. 這一切都在一個「交易 (Transaction)」中完成，確保資料的一致性。
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "EmployeeID", quotation.EmployeeID);
-            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "MemberID", quotation.MemberID);
+
+            // --- 如果 ModelState.IsValid 驗證失敗，需要重新準備下拉選單資料並返回 View ---
+            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "Name", quotation.MemberID);
+            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "Name", quotation.EmployeeID);
             return View(quotation);
         }
 
