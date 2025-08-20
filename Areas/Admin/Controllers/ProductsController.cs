@@ -172,7 +172,7 @@ namespace Project.Areas.Admin.Controllers
        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, IFormFile formFile)
         {
             var product = await _context.Product.FindAsync(id);
             if (product != null)
@@ -180,7 +180,9 @@ namespace Project.Areas.Admin.Controllers
                 
                 if (!string.IsNullOrEmpty(product.ProductImage))
                 {
-                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ProductImage.TrimStart('/'));
+          
+
+                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "Photos/products",product.ProductImage.TrimStart('/'));
                     if (System.IO.File.Exists(imagePath))
                     {
                         System.IO.File.Delete(imagePath);
