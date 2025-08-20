@@ -178,8 +178,8 @@
                         <td>
                             <input type="number" name="QuotationDetails[${index}].Quantity" class="form-control quantity-input" value="1" min="1" />
                         </td>
-                        <td class="subtotal">
-                            ${selectedProduct.price}
+                        <td class="subtotal text-end pe-3">
+                            ${selectedProduct.price.toFixed(2)}
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-sm btn-danger remove-item-btn">移除</button>
@@ -193,9 +193,39 @@
                 selectedProduct = null;
                 $('#productSearch').val('').focus(); // 清空搜尋框並讓它取得焦點
 
-                // (下一步我們會在這裡加入計算總價的函式)
+                 calculateTotals(); // 【新增】加入後，立刻計算一次總價
+               
+             
             });
 
+               // (下一步我們會在這裡加入計算總價的函式)
+
+              // 【新增】: 1. 移除品項功能 (使用事件委派)
+             $('#quotationDetailsTableBody').on('click', '.remove-item-btn', function() {
+                $(this).closest('tr').remove();
+                calculateTotals(); // 移除後，也要重新計算總價
+                // (下一步我們會在這裡加入重新編排索引的邏輯)
+            });
+
+            // 【新增】: 2. 即時計算金額功能 (使用事件委派)
+            $('#quotationDetailsTableBody').on('input', '.price-input, .quantity-input', function() {
+                const row = $(this).closest('tr');
+                const price = parseFloat(row.find('.price-input').val()) || 0;
+                const quantity = parseInt(row.find('.quantity-input').val()) || 0;
+                const subtotal = price * quantity;
+                row.find('.subtotal').text(subtotal.toFixed(2)); // 更新小計
+                calculateTotals(); // 任何變動都重新計算總價
+            });
+
+            // 【新增】: 3. 計算總金額的共用函式
+            function calculateTotals() {
+                let grandTotal = 0;
+                 $('#quotationDetailsTableBody').find('tr').each(function() {
+                    const subtotalText = $(this).find('.subtotal').text();
+                    grandTotal += parseFloat(subtotalText) || 0;
+                });
+                $('#grandTotal').text(grandTotal.toFixed(2)); // 更新總計金額
+            }
         });
    
     </script>
