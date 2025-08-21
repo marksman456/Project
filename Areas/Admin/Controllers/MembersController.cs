@@ -49,11 +49,11 @@ namespace Project.Areas.Admin.Controllers
         public IActionResult Create()
         {
             // 準備性別下拉選單的選項
-            List<SelectListItem> genderList = new List<SelectListItem>
+           var genderList = new List<SelectListItem>
           {
-        new SelectListItem { Value = "M", Text = "男性" },
-        new SelectListItem { Value = "F", Text = "女性" },
-        new SelectListItem { Value = "O", Text = "其他" }
+        new() { Value = "M", Text = "男性" },
+        new() { Value = "F", Text = "女性" },
+        new() { Value = "O", Text = "其他" }
              };
 
             ViewBag.GenderList = genderList;
@@ -91,9 +91,9 @@ namespace Project.Areas.Admin.Controllers
 
            var genderList = new List<SelectListItem>
              {
-              new SelectListItem { Value = "M", Text = "男性" },
-             new SelectListItem { Value = "F", Text = "女性" },
-             new SelectListItem { Value = "O", Text = "其他" }
+              new() { Value = "M", Text = "男性" },
+             new() { Value = "F", Text = "女性" },
+             new() { Value = "O", Text = "其他" }
              };
             ViewBag.GenderList = genderList;
 

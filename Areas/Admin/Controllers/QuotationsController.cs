@@ -39,6 +39,9 @@ namespace Project.Areas.Admin.Controllers
             var quotation = await _context.Quotation
                 .Include(q => q.Employee)
                 .Include(q => q.Member)
+                .Include(q=>q.QuotationDetail)
+                .ThenInclude(qd=>qd.ProductDetail)
+                .ThenInclude(pd=>pd.Product)
                 .FirstOrDefaultAsync(m => m.QuotationID == id);
             if (quotation == null)
             {

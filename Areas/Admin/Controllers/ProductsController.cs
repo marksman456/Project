@@ -172,7 +172,7 @@ namespace Project.Areas.Admin.Controllers
        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, IFormFile formFile)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Product.FindAsync(id);
             if (product != null)
@@ -206,15 +206,16 @@ namespace Project.Areas.Admin.Controllers
             }
 
             // 根據傳入的搜尋字詞 (term)，查詢商品名稱或 SKU 包含該字詞的商品
-            var products = await _context.ProductDetail.Include(pd=>pd.Product)
-                .Where(pd => pd.Product.ProductName.Contains(keyword) || pd.Product.ProductSKU.Contains(keyword))
+            var products = await _context.ProductDetail.Include(pd=>pd.Product).ThenInclude(p=>p.ProductModel).ThenInclude(pm => pm.ModelSpec)
+                .Where(pd => pd.Product.ProductName.Contains(keyword) || pd.Product.ProductModel.ModelSpec.Any(ms => ms.SpecValue.Contains(keyword)))
                 // 【修改】: 將 new { ... } 改為 new ProductSearchDTO { ... }
                 .Select(pd => new ProductSearchDTO
                 {
-                    Id = pd.ProductDetailID,
-                    Label = pd.Product.ProductName + " (" + pd.Product.ProductSKU + ")",
-                    Value = pd.Product.ProductName,
-                    Price = pd.Product.Price
+                    ProductDetailId = pd.ProductDetailID,
+                    Label = pd.Product.ProductName + " (" +
+                    string.Join(", ", pd.Product.ProductModel.ModelSpec.Select(ms => ms.SpecValue)) +
+                    ")",
+                    Price = pd.Product.ProductID
                 })
                 .Take(10) // 最多只回傳 10 筆結果
                 .ToListAsync();

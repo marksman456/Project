@@ -62,7 +62,7 @@
             <div class="row mb-3">
                 <div class="col-md-10">
                     <label class="form-label">搜尋商品</label>
-                    <input type="text" id="productSearch" class="form-control" placeholder="輸入商品名稱或SKU進行搜尋..." />
+                    <input type="text" id="productSearch" class="form-control" placeholder="輸入商品名稱或規格進行搜尋..." />
                 </div>
                 <div class="col-md-2 d-grid">
                     <label class="form-label">&nbsp;</label>
@@ -169,7 +169,7 @@
                     <tr>
                         <td>
                             @* 為了將資料回傳給 Controller，我們需要隱藏的 input *@
-                            <input type="hidden" name="QuotationDetail[${index}].ProductID" value="${selectedProduct.id}" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailId" value="${selectedProduct.productDetailId}" />
                             ${selectedProduct.label}
                         </td>
                         <td>
