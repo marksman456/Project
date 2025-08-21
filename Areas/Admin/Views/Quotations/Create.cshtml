@@ -169,14 +169,14 @@
                     <tr>
                         <td>
                             @* 為了將資料回傳給 Controller，我們需要隱藏的 input *@
-                            <input type="hidden" name="QuotationDetails[${index}].ProductID" value="${selectedProduct.id}" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductID" value="${selectedProduct.id}" />
                             ${selectedProduct.label}
                         </td>
                         <td>
-                            <input type="number" name="QuotationDetails[${index}].Price" class="form-control price-input" value="${selectedProduct.price}" step="0.01" />
+                            <input type="number" name="QuotationDetail[${index}].Price" class="form-control price-input" value="${selectedProduct.price}" step="0.01" />
                         </td>
                         <td>
-                            <input type="number" name="QuotationDetails[${index}].Quantity" class="form-control quantity-input" value="1" min="1" />
+                            <input type="number" name="QuotationDetail[${index}].Quantity" class="form-control quantity-input" value="1" min="1" />
                         </td>
                         <td class="subtotal text-end pe-3">
                             ${selectedProduct.price.toFixed(2)}

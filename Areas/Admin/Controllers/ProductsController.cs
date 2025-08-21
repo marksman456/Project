@@ -206,15 +206,15 @@ namespace Project.Areas.Admin.Controllers
             }
 
             // 根據傳入的搜尋字詞 (term)，查詢商品名稱或 SKU 包含該字詞的商品
-            var products = await _context.Product
-                .Where(p => p.ProductName.Contains(keyword) || p.ProductSKU.Contains(keyword))
+            var products = await _context.ProductDetail.Include(pd=>pd.Product)
+                .Where(pd => pd.Product.ProductName.Contains(keyword) || pd.Product.ProductSKU.Contains(keyword))
                 // 【修改】: 將 new { ... } 改為 new ProductSearchDTO { ... }
-                .Select(p => new ProductSearchDTO
+                .Select(pd => new ProductSearchDTO
                 {
-                    Id = p.ProductID,
-                    Label = p.ProductName + " (" + p.ProductSKU + ")",
-                    Value = p.ProductName,
-                    Price = p.Price
+                    Id = pd.ProductDetailID,
+                    Label = pd.Product.ProductName + " (" + pd.Product.ProductSKU + ")",
+                    Value = pd.Product.ProductName,
+                    Price = pd.Product.Price
                 })
                 .Take(10) // 最多只回傳 10 筆結果
                 .ToListAsync();

@@ -73,13 +73,26 @@ namespace Project.Areas.Admin.Controllers
         {
             // 移除 QuotationNumber 的模型驗證，因為它是後端產生的
             ModelState.Remove("QuotationNumber");
-           
+            ModelState.Remove("Status");
             // 手動移除對關聯實體的驗證，因為我們只需要ID
             ModelState.Remove("Member");
             ModelState.Remove("Employee");
 
+
+            if (quotation.QuotationDetail != null)
+            {
+                for (int i = 0; i < quotation.QuotationDetail.Count; i++)
+                {
+                    // 移除明細中對父層 Quotation 物件的驗證
+                    ModelState.Remove($"QuotationDetail[{i}].Quotation");
+                    // 移除明細中對 ProductDetail 物件的驗證
+                    ModelState.Remove($"QuotationDetail[{i}].ProductDetail");
+                }
+            }
+
             if (ModelState.IsValid)
             {
+
                 // --- 1. 產生報價單號 (如之前討論的) ---
                 string datePart = DateTime.Today.ToString("yyyyMMdd");
                 int dailyCount = await _context.Quotation.CountAsync(q => q.QuoteDate == DateOnly.FromDateTime(DateTime.Today));
@@ -109,8 +122,8 @@ namespace Project.Areas.Admin.Controllers
             }
 
             // --- 如果 ModelState.IsValid 驗證失敗，需要重新準備下拉選單資料並返回 View ---
-            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "Name", quotation.MemberID);
-            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "Name", quotation.EmployeeID);
+            ViewData["MemberName"] = new SelectList(_context.Member, "MemberID", "Name", quotation.MemberID);
+            ViewData["EmployeeName"] = new SelectList(_context.Employee, "EmployeeID", "Name", quotation.EmployeeID);
             return View(quotation);
         }
 
