@@ -266,6 +266,7 @@ public partial class XiangYunDbContext : DbContext
 
             entity.Property(e => e.SerialNumber).HasMaxLength(50);
             entity.Property(e => e.Status).HasMaxLength(20);
+            entity.Property(e => e.Price).HasPrecision(18, 2);
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductDetail)
                 .HasForeignKey(d => d.ProductID)

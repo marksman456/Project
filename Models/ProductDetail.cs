@@ -15,6 +15,8 @@ public partial class ProductDetail
 
     public string Status { get; set; } = null!;
 
+    public decimal Price { get; set; }
+
     public virtual ICollection<InventoryMovement> InventoryMovement { get; set; } = new List<InventoryMovement>();
 
     public virtual ICollection<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
