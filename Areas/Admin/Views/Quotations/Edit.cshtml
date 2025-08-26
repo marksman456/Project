@@ -1,79 +1,237 @@
 ﻿@model Project.Models.Quotation
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "編輯報價單";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @* 隱藏欄位，用來傳遞 QuotationID *@
+        <input type="hidden" asp-for="QuotationID" />
+        <input type="hidden" asp-for="QuotationNumber" />
+        <input type="hidden" asp-for="CreatedDate" />
 
-<h4>Quotation</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="QuotationID" />
-            <div class="form-group">
-                <label asp-for="QuotationNumber" class="control-label"></label>
-                <input asp-for="QuotationNumber" class="form-control" />
-                <span asp-validation-for="QuotationNumber" class="text-danger"></span>
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h2 class="mb-0">@ViewData["Title"] - @Model.QuotationNumber</h2>
             </div>
-            <div class="form-group">
-                <label asp-for="MemberID" class="control-label"></label>
-                <select asp-for="MemberID" class="form-control" asp-items="ViewBag.MemberID"></select>
-                <span asp-validation-for="MemberID" class="text-danger"></span>
+
+            @* --- 主檔資訊 --- *@
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="MemberID" class="form-label fw-bold">客戶名稱</label>
+                        <select asp-for="MemberID" class="form-select" asp-items="ViewBag.MemberName"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="EmployeeID" class="form-label fw-bold">負責員工</label>
+                        <select asp-for="EmployeeID" class="form-select" asp-items="ViewBag.EmployeeName"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="QuoteDate" class="form-label fw-bold">報價日期</label>
+                        <input asp-for="QuoteDate" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ValidityPeriod" class="form-label fw-bold">有效期限</label>
+                        <input asp-for="ValidityPeriod" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Status" class="form-label fw-bold">狀態</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="報價中">報價中</option>
+                            <option value="已成交">已成交</option>
+                            <option value="已失效">已失效</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Note" class="form-label fw-bold">備註</label>
+                        <textarea asp-for="Note" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="EmployeeID" class="control-label"></label>
-                <select asp-for="EmployeeID" class="form-control" asp-items="ViewBag.EmployeeID"></select>
-                <span asp-validation-for="EmployeeID" class="text-danger"></span>
+
+            <hr class="my-0" />
+
+            @* --- 明細輸入區 --- *@
+            <div class="card-body">
+                <h5 class="card-title">報價品項</h5>
+                <div class="row g-2 align-items-center mb-3 p-2 bg-body-tertiary rounded">
+                    <div class="col-md-8">
+                        <label for="productSearch" class="form-label">搜尋商品 (名稱/SKU/規格)</label>
+                        <input type="text" id="productSearch" class="form-control" placeholder="輸入關鍵字搜尋...">
+                    </div>
+                    <div class="col-md-4 d-grid">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="addProductBtn" class="btn btn-success">加入品項</button>
+                    </div>
+                </div>
+
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 40%;">商品名稱 (規格)</th>
+                            <th style="width: 15%;" class="text-end">單價</th>
+                            <th style="width: 15%;" class="text-center">數量</th>
+                            <th style="width: 15%;" class="text-end">小計</th>
+                            <th style="width: 15%;" class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quotationDetailsTableBody">
+                        @* 【修改重點】: 使用 for 迴圈載入已有的明細資料 *@
+                        @for (int i = 0; i < Model.QuotationDetail.Count; i++)
+                        {
+                            var item = Model.QuotationDetail.ElementAt(i);
+                            <tr>
+                                <td>
+                                    @* 隱藏欄位，用來傳遞 QuotationDetailID 和 ProductDetailID *@
+                                    <input type="hidden" name="QuotationDetails[@i].QuotationDetailID" value="@item.QuotationID />
+                                    <input type="hidden" name="QuotationDetails[@i].ProductDetailID" value="@item.ProductDetailID" />
+
+                                    @item.ProductDetail.Product.ProductName (@item.Quotation.Status)
+                                </td>
+                                <td>
+                                    <input type="number" name="QuotationDetails[@i].Price" class="form-control text-end price-input" value="@item.Price" step="1" min="0" />
+                                </td>
+                                <td>
+                                    <input type="number" name="QuotationDetails[@i].Quantity" class="form-control text-center quantity-input" value="@item.Quantity" min="1" />
+                                </td>
+                                <td class="subtotal text-end pe-3 align-middle">
+                                    @((item.Price * item.Quantity).ToString("N2"))
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-danger remove-item-btn">移除</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold fs-5">
+                            <td colspan="3" class="text-end">總計金額：</td>
+                            <td id="grandTotal" class="text-end pe-3 text-danger"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-            <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-primary">儲存變更</button>
+                <a asp-action="Index" class="btn btn-secondary">返回列表</a>
             </div>
-            <div class="form-group">
-                <label asp-for="LastUpdate" class="control-label"></label>
-                <input asp-for="LastUpdate" class="form-control" />
-                <span asp-validation-for="LastUpdate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="QuoteDate" class="control-label"></label>
-                <input asp-for="QuoteDate" class="form-control" />
-                <span asp-validation-for="QuoteDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ValidityPeriod" class="control-label"></label>
-                <input asp-for="ValidityPeriod" class="form-control" />
-                <span asp-validation-for="ValidityPeriod" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsTransferred" /> @Html.DisplayNameFor(model => model.IsTransferred)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Note" class="control-label"></label>
-                <input asp-for="Note" class="form-control" />
-                <span asp-validation-for="Note" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+@* 引用和 Create.cshtml 完全一樣的 jQuery 腳本 *@
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+  
+
+    <script>
+        // 這裡的 jQuery 腳本和 Create.cshtml 中的完全一樣
+        // 它可以無縫地在已有的表格基礎上，繼續新增和移除品項
+        $(document).ready(function () {
+
+            let selectedProduct = null;
+            const detailsTableBody = $('#quotationDetailsTableBody');
+
+            // 頁面載入時，先計算一次總金額
+            calculateTotals();
+
+            $("#productSearch").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchProducts", "Products", new { Area = "Admin" })",
+                        dataType: "json",
+                        data: { keyword: request.term },
+                        success: function (data) { response(data); }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#productSearch").val(ui.item.label);
+                    selectedProduct = ui.item;
+                    event.preventDefault();
+                }
+            });
+
+            $("#productSearch").on("keyup", function(){
+                if($(this).val() === ""){ selectedProduct = null; }
+            });
+
+            $('#addProductBtn').on('click', function() {
+                if (selectedProduct == null) {
+                    alert('請先搜尋並從下拉選單中選擇一個商品規格！');
+                    return;
+                }
+                const isExisting = detailsTableBody.find(`input[name$=".ProductDetailID"][value="${selectedProduct.productDetailId}"]`).length > 0;
+                if (isExisting) {
+                    alert('此商品規格已存在於報價單中，請直接修改數量。');
+                    return;
+                }
+                const index = detailsTableBody.find('tr').length;
+                const newRow = `
+                    <tr>
+                        <td>
+                            <input type="hidden" name="QuotationDetail[${index}].QuotationDetailID" value="0" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailId}" />
+                            ${selectedProduct.label}
+                        </td>
+                        <td>
+                            <input type="number" name="QuotationDetail[${index}].Price" class="form-control text-end price-input" value="${Number(selectedProduct.price)}" step="1" min="0" />
+                        </td>
+                        <td>
+                            <input type="number" name="QuotationDetail[${index}].Quantity" class="form-control text-center quantity-input" value="1" min="1" />
+                        </td>
+                        <td class="subtotal text-end pe-3 align-middle">
+                             ${(selectedProduct.price)}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-danger remove-item-btn">移除</button>
+                        </td>
+                    </tr>`;
+                detailsTableBody.append(newRow);
+                selectedProduct = null;
+                $('#productSearch').val('').focus();
+                calculateTotals();
+            });
+
+            detailsTableBody.on('click', '.remove-item-btn', function() {
+                $(this).closest('tr').remove();
+                calculateTotals();
+                reindexTableRows();
+            });
+            detailsTableBody.on('input', '.price-input, .quantity-input', function() {
+                const row = $(this).closest('tr');
+                const price = parseFloat(row.find('.price-input').val()) || 0;
+                const quantity = parseInt(row.find('.quantity-input').val()) || 0;
+                const subtotal = price * quantity;
+                row.find('.subtotal').text(subtotal.toFixed(2));
+                calculateTotals();
+            });
+            function calculateTotals() {
+                let grandTotal = 0;
+                detailsTableBody.find('tr').each(function() {
+                    let subtotalText = $(this).find('.subtotal').text().replace(/,/g, ''); // 移除千分位逗號
+                    grandTotal += parseFloat(subtotalText) || 0;
+                });
+                $('#grandTotal').text(grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            }
+            function reindexTableRows() {
+                detailsTableBody.find('tr').each(function(newIndex) {
+                    $(this).find('input, select').each(function() {
+                        const oldName = $(this).attr('name');
+                        if (oldName) {
+                            const newName = oldName.replace(/\\[\\d+\\]/, `[${newIndex}]`);
+                            $(this).attr('name', newName);
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 }

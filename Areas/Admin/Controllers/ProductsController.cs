@@ -211,7 +211,7 @@ namespace Project.Areas.Admin.Controllers
                 // 【修改】: 將 new { ... } 改為 new ProductSearchDTO { ... }
                 .Select(pd => new ProductSearchDTO
                 {
-                    ProductDetailId = pd.ProductID,
+                    ProductDetailID = pd.ProductDetailID,
                     Label = pd.Product.ProductName + " (" +
                     string.Join(", ", pd.Product.ProductModel.ModelSpec.Select(ms => ms.SpecValue)) +
                     ")",

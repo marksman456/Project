@@ -157,7 +157,7 @@
 
                 // 2. 檢查該商品是否已存在於明細中
                 // 我們用商品ID來檢查，避免重複加入
-                const isExisting = $(`#quotationDetailsTableBody input[name$=".ProductID"][value="${selectedProduct.id}"]`).length > 0;
+                const isExisting = $(`#quotationDetailsTableBody input[name$=".ProductDetailID"][value="${selectedProduct.id}"]`).length > 0;
                 if (isExisting) {
                     alert('此商品已存在於報價單中，請直接修改數量。');
                     return;
@@ -169,7 +169,7 @@
                     <tr>
                         <td>
                             @* 為了將資料回傳給 Controller，我們需要隱藏的 input *@
-                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailId" value="${selectedProduct.productDetailId}" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailId}" />
                             ${selectedProduct.label}
                         </td>
                         <td>

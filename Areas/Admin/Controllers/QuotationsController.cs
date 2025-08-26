@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -138,13 +139,15 @@ namespace Project.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var quotation = await _context.Quotation.FindAsync(id);
+            var quotation = await _context.Quotation.Include(q=>q.Member).Include(q=>q.Employee).Include(q=>q.QuotationDetail)
+                .ThenInclude(qd=>qd.ProductDetail).ThenInclude(pd => pd.Product).FirstOrDefaultAsync(m => m.QuotationID == id); ;
+
             if (quotation == null)
             {
                 return NotFound();
             }
-            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "EmployeeID", quotation.EmployeeID);
-            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "MemberID", quotation.MemberID);
+            ViewData["EmployeeName"] = new SelectList(_context.Employee, "EmployeeID", "Name", quotation.MemberID);
+            ViewData["MemberName"] = new SelectList(_context.Member, "MemberID", "Name", quotation.EmployeeID);
             return View(quotation);
         }
 
