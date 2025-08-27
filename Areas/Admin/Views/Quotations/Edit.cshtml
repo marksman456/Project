@@ -1,4 +1,4 @@
-﻿@model Project.Models.Quotation
+﻿@model Project.Models.ViewModels.QuotationEditViewModel
 
 @{
     ViewData["Title"] = "編輯報價單";
@@ -85,16 +85,17 @@
                             <tr>
                                 <td>
                                     @* 隱藏欄位，用來傳遞 QuotationDetailID 和 ProductDetailID *@
-                                    <input type="hidden" name="QuotationDetails[@i].QuotationDetailID" value="@item.QuotationID />
-                                    <input type="hidden" name="QuotationDetails[@i].ProductDetailID" value="@item.ProductDetailID" />
+                                    <input type="hidden" name="QuotationDetail[@i].QuotationDetailID" value="@item.QuotationID" />
+                                    <input type="hidden" name="QuotationDetail[@i].ProductDetailID" value="@item.ProductDetailID"/>
 
-                                    @item.ProductDetail.Product.ProductName (@item.Quotation.Status)
+                                    @item.ProductNameAndSpec
+
                                 </td>
                                 <td>
-                                    <input type="number" name="QuotationDetails[@i].Price" class="form-control text-end price-input" value="@item.Price" step="1" min="0" />
+                                    <input type="number" name="QuotationDetail[@i].Price" class="form-control text-end price-input" value="@item.Price" step="0.01" min="0" />
                                 </td>
                                 <td>
-                                    <input type="number" name="QuotationDetails[@i].Quantity" class="form-control text-center quantity-input" value="@item.Quantity" min="1" />
+                                    <input type="number" name="QuotationDetail[@i].Quantity" class="form-control text-center quantity-input" value="@item.Quantity" min="1" />
                                 </td>
                                 <td class="subtotal text-end pe-3 align-middle">
                                     @((item.Price * item.Quantity).ToString("N2"))
@@ -116,7 +117,7 @@
             </div>
 
             <div class="card-footer text-center">
-                <button type="submit" class="btn btn-primary">儲存變更</button>
+                <input type="submit" class="btn btn-primary" value="儲存變更"/>
                 <a asp-action="Index" class="btn btn-secondary">返回列表</a>
             </div>
         </div>
@@ -129,17 +130,15 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-  
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
 
     <script>
-        // 這裡的 jQuery 腳本和 Create.cshtml 中的完全一樣
-        // 它可以無縫地在已有的表格基礎上，繼續新增和移除品項
         $(document).ready(function () {
 
             let selectedProduct = null;
             const detailsTableBody = $('#quotationDetailsTableBody');
 
-            // 頁面載入時，先計算一次總金額
             calculateTotals();
 
             $("#productSearch").autocomplete({
@@ -164,31 +163,43 @@
             });
 
             $('#addProductBtn').on('click', function() {
+                
                 if (selectedProduct == null) {
                     alert('請先搜尋並從下拉選單中選擇一個商品規格！');
                     return;
                 }
-                const isExisting = detailsTableBody.find(`input[name$=".ProductDetailID"][value="${selectedProduct.productDetailId}"]`).length > 0;
-                if (isExisting) {
-                    alert('此商品規格已存在於報價單中，請直接修改數量。');
-                    return;
-                }
+              
+                     const isExisting = detailsTableBody.find('input[name*="ProductDetailID"]').filter(function() {
+                        
+                    return String($(this).val()) === String(selectedProduct.productDetailID);
+                     }).length > 0;
+
+                 
+
+                      if (isExisting) {
+                          alert('此商品規格已存在於報價單中，請直接修改數量。');
+                          return;
+                      }
                 const index = detailsTableBody.find('tr').length;
+
+                // 【修改 #1】: 新增品項時，也使用 toLocaleString 格式化初始小計
+                const initialSubtotal = selectedProduct.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
                 const newRow = `
                     <tr>
                         <td>
                             <input type="hidden" name="QuotationDetail[${index}].QuotationDetailID" value="0" />
-                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailId}" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailID}" />
                             ${selectedProduct.label}
                         </td>
                         <td>
-                            <input type="number" name="QuotationDetail[${index}].Price" class="form-control text-end price-input" value="${Number(selectedProduct.price)}" step="1" min="0" />
+                            <input type="number" name="QuotationDetail[${index}].Price" class="form-control text-end price-input" value="${Number(selectedProduct.price).toFixed(2)}" step="0.01" min="0" />
                         </td>
                         <td>
                             <input type="number" name="QuotationDetail[${index}].Quantity" class="form-control text-center quantity-input" value="1" min="1" />
                         </td>
                         <td class="subtotal text-end pe-3 align-middle">
-                             ${(selectedProduct.price)}
+                            ${initialSubtotal}
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-sm btn-danger remove-item-btn">移除</button>
@@ -205,22 +216,30 @@
                 calculateTotals();
                 reindexTableRows();
             });
+
             detailsTableBody.on('input', '.price-input, .quantity-input', function() {
                 const row = $(this).closest('tr');
                 const price = parseFloat(row.find('.price-input').val()) || 0;
                 const quantity = parseInt(row.find('.quantity-input').val()) || 0;
                 const subtotal = price * quantity;
-                row.find('.subtotal').text(subtotal.toFixed(2));
+
+                // 【修改 #2】: 修改數量/價格時，使用 toLocaleString 格式化小計
+                const formattedSubtotal = subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                row.find('.subtotal').text(formattedSubtotal);
+
                 calculateTotals();
             });
+
             function calculateTotals() {
                 let grandTotal = 0;
                 detailsTableBody.find('tr').each(function() {
-                    let subtotalText = $(this).find('.subtotal').text().replace(/,/g, ''); // 移除千分位逗號
+                    const subtotalText = $(this).find('.subtotal').text().replace(/,/g, ''); // 移除千分位符號再計算
                     grandTotal += parseFloat(subtotalText) || 0;
                 });
+                // 總計也使用 toLocaleString 保持格式一致
                 $('#grandTotal').text(grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
+
             function reindexTableRows() {
                 detailsTableBody.find('tr').each(function(newIndex) {
                     $(this).find('input, select').each(function() {

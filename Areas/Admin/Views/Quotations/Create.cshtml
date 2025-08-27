@@ -82,7 +82,7 @@
                     </tr>
                 </thead>
                 <tbody id="quotationDetailsTableBody">
-                    @* 這裡的內容將由 jQuery 動態產生 *@
+                   
                 </tbody>
             </table>
         </div>
@@ -154,10 +154,12 @@
                     alert('請先搜尋並從下拉選單中選擇一個商品！');
                     return; // 中止執行
                 }
-
+                console.log(selectedProduct);
                 // 2. 檢查該商品是否已存在於明細中
                 // 我們用商品ID來檢查，避免重複加入
-                const isExisting = $(`#quotationDetailsTableBody input[name$=".ProductDetailID"][value="${selectedProduct.id}"]`).length > 0;
+                const isExisting = $(`#quotationDetailsTableBody input[name$=".ProductDetailID"][value="${selectedProduct.productDetailID}"]`).length > 0;
+                
+
                 if (isExisting) {
                     alert('此商品已存在於報價單中，請直接修改數量。');
                     return;
@@ -169,11 +171,11 @@
                     <tr>
                         <td>
                             @* 為了將資料回傳給 Controller，我們需要隱藏的 input *@
-                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailId}" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailID}" />
                             ${selectedProduct.label}
                         </td>
                         <td>
-                            <input type="number" name="QuotationDetail[${index}].Price" class="form-control price-input" value="${selectedProduct.price}" step="0.01" />
+                            <input type="number" name="QuotationDetail[${index}].Price" class="form-control price-input" value="${selectedProduct.price.toFixed(2)}" step="0.01" />
                         </td>
                         <td>
                             <input type="number" name="QuotationDetail[${index}].Quantity" class="form-control quantity-input" value="1" min="1" />

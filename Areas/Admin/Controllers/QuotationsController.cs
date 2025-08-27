@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
+using Project.Models.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Threading.Tasks;
 
 namespace Project.Areas.Admin.Controllers
 {
@@ -134,59 +135,118 @@ namespace Project.Areas.Admin.Controllers
         // GET: Admin/Quotations/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var quotation = await _context.Quotation.Include(q=>q.Member).Include(q=>q.Employee).Include(q=>q.QuotationDetail)
-                .ThenInclude(qd=>qd.ProductDetail).ThenInclude(pd => pd.Product).FirstOrDefaultAsync(m => m.QuotationID == id); ;
+            var quotation = await _context.Quotation
+                .Include(q => q.QuotationDetail)
+                    .ThenInclude(qd => qd.ProductDetail)
+                        .ThenInclude(pd => pd.Product)
+                            .ThenInclude(p => p.ProductModel)
+                                .ThenInclude(pm => pm.ModelSpec)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.QuotationID == id);
 
-            if (quotation == null)
+            if (quotation == null) return NotFound();
+
+            // 【關鍵點 #1】: 將從資料庫撈出的 Quotation，手動映射(Mapping)成 ViewModel
+            var viewModel = new QuotationEditViewModel
             {
-                return NotFound();
-            }
-            ViewData["EmployeeName"] = new SelectList(_context.Employee, "EmployeeID", "Name", quotation.MemberID);
-            ViewData["MemberName"] = new SelectList(_context.Member, "MemberID", "Name", quotation.EmployeeID);
-            return View(quotation);
+                QuotationID = quotation.QuotationID,
+                QuotationNumber = quotation.QuotationNumber,
+                MemberID = quotation.MemberID,
+                EmployeeID = quotation.EmployeeID,
+                CreatedDate = quotation.CreatedDate,
+                LastUpdate = quotation.LastUpdate,
+                QuoteDate = quotation.QuoteDate,
+                ValidityPeriod = quotation.ValidityPeriod,
+                Status = quotation.Status,
+                Note = quotation.Note,
+                QuotationDetail = quotation.QuotationDetail.Select(qd => new QuotationDetailViewModel
+                {
+                    QuotationDetailID = qd.QuotationID,
+                    QuotationID = qd.QuotationID,
+                    ProductDetailID = qd.ProductDetailID,
+                    Price = qd.Price,
+                    Quantity = qd.Quantity,
+                    ProductNameAndSpec = $"{qd.ProductDetail?.Product?.ProductName} ({string.Join(", ", qd.ProductDetail?.Product?.ProductModel?.ModelSpec.Select(ms => ms.SpecValue) ?? Enumerable.Empty<string>())})"
+                }).ToList()
+            };
+
+            ViewData["MemberName"] = new SelectList(_context.Member, "MemberID", "Name", viewModel.MemberID);
+            ViewData["EmployeeName"] = new SelectList(_context.Employee, "EmployeeID", "Name", viewModel.EmployeeID);
+
+            // 傳給 View 的是 viewModel，不是 quotation
+            return View(viewModel);
         }
 
         // POST: Admin/Quotations/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Admin/Quotations/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("QuotationID,QuotationNumber,MemberID,EmployeeID,CreatedDate,LastUpdate,QuoteDate,ValidityPeriod,Status,IsTransferred,Note")] Quotation quotation)
+        public async Task<IActionResult> Edit(int id, QuotationEditViewModel viewModel)
         {
-            if (id != quotation.QuotationID)
-            {
-                return NotFound();
-            }
+            if (id != viewModel.QuotationID) return NotFound();
 
             if (ModelState.IsValid)
             {
-                try
+                var quotationInDb = await _context.Quotation
+                    .Include(q => q.QuotationDetail)
+                    .FirstOrDefaultAsync(q => q.QuotationID == id);
+
+                if (quotationInDb == null) return NotFound();
+
+                // --- 將 ViewModel 的變動，手動映射回 Entity Model ---
+                quotationInDb.MemberID = viewModel.MemberID;
+                quotationInDb.EmployeeID = viewModel.EmployeeID;
+                quotationInDb.QuoteDate = viewModel.QuoteDate;
+                quotationInDb.ValidityPeriod = viewModel.ValidityPeriod;
+                quotationInDb.Status = viewModel.Status;
+                quotationInDb.Note = viewModel.Note;
+                quotationInDb.LastUpdate = DateTime.Now;
+
+                var detailsToDelete = quotationInDb.QuotationDetail
+                    .Where(d => !viewModel.QuotationDetail.Any(vm => vm.QuotationDetailID == d.QuotationID))
+                    .ToList();
+                _context.QuotationDetail.RemoveRange(detailsToDelete);
+
+                foreach (var detailViewModel in viewModel.QuotationDetail)
                 {
-                    _context.Update(quotation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!QuotationExists(quotation.QuotationID))
+                    if (detailViewModel.QuotationDetailID > 0) // 更新
                     {
-                        return NotFound();
+                        var detailInDb = quotationInDb.QuotationDetail.FirstOrDefault(d => d.QuotationID == detailViewModel.QuotationDetailID);
+                        if (detailInDb != null)
+                        {
+                            detailInDb.Price = detailViewModel.Price;
+                            detailInDb.Quantity = detailViewModel.Quantity;
+                        }
                     }
-                    else
+                    else // 新增
                     {
-                        throw;
+                        quotationInDb.QuotationDetail.Add(new QuotationDetail
+                        {
+                            ProductDetailID = detailViewModel.ProductDetailID,
+                            Price = detailViewModel.Price,
+                            Quantity = detailViewModel.Quantity
+                        });
                     }
                 }
+
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeID"] = new SelectList(_context.Employee, "EmployeeID", "EmployeeID", quotation.EmployeeID);
-            ViewData["MemberID"] = new SelectList(_context.Member, "MemberID", "MemberID", quotation.MemberID);
-            return View(quotation);
+
+            // 【關鍵點 #2】: 如果驗證失敗，也要重新準備下拉選單，並將 viewModel 傳回
+            ViewData["MemberName"] = new SelectList(_context.Member, "MemberID", "Name", viewModel.MemberID);
+            ViewData["EmployeeName"] = new SelectList(_context.Employee, "EmployeeID", "Name", viewModel.EmployeeID);
+
+            // 傳給 View 的是 viewModel
+            return View(viewModel);
         }
+
+
+
 
         // GET: Admin/Quotations/Delete/5
         public async Task<IActionResult> Delete(int? id)

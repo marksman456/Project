@@ -205,7 +205,7 @@ namespace Project.Areas.Admin.Controllers
                 return Json(new List<ProductSearchDTO>());
             }
 
-            // 根據傳入的搜尋字詞 (term)，查詢商品名稱或 SKU 包含該字詞的商品
+            // 根據傳入的搜尋字詞 (Keyword)，查詢商品名稱或 SKU 包含該字詞的商品
             var products = await _context.ProductDetail.Include(pd=>pd.Product).ThenInclude(p=>p.ProductModel).ThenInclude(pm => pm.ModelSpec)
                 .Where(pd => pd.Status == "庫存中" && pd.Product.ProductName.Contains(keyword) || pd.Product.ProductModel.ModelSpec.Any(ms => ms.SpecValue.Contains(keyword)))
                 // 【修改】: 將 new { ... } 改為 new ProductSearchDTO { ... }
