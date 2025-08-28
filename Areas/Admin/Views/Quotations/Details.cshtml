@@ -14,18 +14,32 @@
         @* --- 主檔資訊 --- *@
         <div class="card-body">
             <dl class="row">
-                <dt class="col-sm-2">客戶名稱</dt>
+                <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.Member.Name)</dt>
                 <dd class="col-sm-4">@Model.Member.Name</dd>
 
-                <dt class="col-sm-2">負責員工</dt>
+                <dt class="col-sm-2">   @Html.DisplayNameFor(model => model.Employee.Name)</dt>
                 <dd class="col-sm-4">@Model.Employee.Name</dd>
 
-                <dt class="col-sm-2">報價日期</dt>
+                <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.QuoteDate)</dt>
                 <dd class="col-sm-4">@Model.QuoteDate.ToString("yyyy-MM-dd")</dd>
 
-                <dt class="col-sm-2">狀態</dt>
+                <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.ValidityPeriod)</dt>
+                <dd class="col-sm-4">
+                    @(Model.ValidityPeriod.HasValue
+                                        ? Model.ValidityPeriod.Value.ToString("yyyy-MM-dd")
+                                        : "--")
+                </dd>
+
+
+                <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.Status)</dt>
                 <dd class="col-sm-4">@Model.Status</dd>
+
+
+                <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.Note)</dt>
+                <dd class="col-sm-4">@Model.Note</dd>
+
             </dl>
+
         </div>
 
         <hr class="my-0" />
@@ -33,47 +47,76 @@
         @* --- 明細資訊 --- *@
         <div class="card-body">
             <h5 class="card-title">報價品項</h5>
-            <table class="table table-striped table-bordered">
+            @* --- 請將整個 table 區塊替換為以下版本 --- *@
+            <h4>報價明細</h4>
+            <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
-                        <th>商品 SKU</th>
-                        <th>商品名稱</th>
-                        <th>描述</th> @* 新增規格欄位 *@
+                        <th>商品名稱 (規格)</th>
                         <th class="text-end">單價</th>
-                        <th class="text-center">数量</th>
+                        <th class="text-center">數量</th>
+                        <th class="text-center">折扣</th>
                         <th class="text-end">小計</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @{
+                        decimal totalAmount = 0;
+                    }
                     @foreach (var item in Model.QuotationDetail)
                     {
+                        var subtotal = item.Price * item.Quantity * (item.Discount ?? 1.0m);
+                        totalAmount += subtotal;
                         <tr>
-                            @* 【修正】路徑改為 item.ProductDetail.Product.* *@
-                            <td>@item.ProductDetail.Product.ProductSKU</td>
-                            <td>@item.ProductDetail.Product.ProductName</td>
-                            <td>@item.ProductDetail.Product.Description</td> @* 顯示 ProductDetail 的 *@
-                            <td class="text-end">@item.Price.ToString("N0")</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProductDetail.Product.ProductName)
+                                (@Html.DisplayFor(modelItem => item.ProductDetail.Status))
+                            </td>
+                            <td class="text-end">@item.Price.ToString("N2")</td>
                             <td class="text-center">@item.Quantity</td>
-                            <td class="text-end">@((item.Price * item.Quantity).ToString("N0"))</td>
+                            <td class="text-center">
+                                @(item.Discount.HasValue && item.Discount.Value < 1m
+                                                            ? (item.Discount.Value * 10 % 1 == 0
+                                                            ? $"{(int)(item.Discount.Value * 10)}折"
+                                                            : $"{item.Discount.Value * 10:0.#}折")
+                                                            : "--")
+                        </td>
+                            <td class="text-end">@subtotal.ToString("N2")</td>
                         </tr>
                     }
                 </tbody>
                 <tfoot>
-                    <tr class="fw-bold">
-                        <td colspan="5" class="text-end h5">總計金額：</td>
-                        @{
-                            decimal grandTotal = Model.QuotationDetail.Sum(item => item.Price * item.Quantity);
-                        }
-                        <td class="text-end h5 text-danger">@grandTotal.ToString("C0")</td>
+                    <tr>
+                        <td colspan="4" class="text-end fw-bold">總計</td>
+                        <td class="text-end fw-bold">@totalAmount.ToString("N2")</td>
                     </tr>
                 </tfoot>
             </table>
         </div>
 
-        <div class="card-footer text-center">
-            <a asp-action="Edit" asp-route-id="@Model.QuotationID" class="btn btn-primary">編輯</a>
-            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
 
+      
+    
+    
+      
+
+
+        <div class="card-footer text-center">
+            <div class="d-flex justify-content-center gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.QuotationID" class="btn btn-primary">編輯訂單</a>
+
+                @if (Model.Status == "報價中")
+                {
+                    <form asp-area="Admin" asp-controller="Orders" asp-action="CreateFromQuotation" method="post" class="d-inline">
+                        <input type="hidden" name="quotationId" value="@Model.QuotationID" />
+                        <button type="submit" class="btn btn-success"
+                                onclick="return confirm('您確定要將此報價單轉換為正式訂單嗎？這將會更新庫存狀態。');">
+                            <i class="bi bi-cart-check-fill"></i> 建立訂單
+                        </button>
+                    </form>
+                }
+                <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+            </div>
         </div>
     </div>
 </div>

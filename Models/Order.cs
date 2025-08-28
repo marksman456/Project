@@ -21,9 +21,14 @@ public partial class Order
 
     public bool IsPaid { get; set; }
 
+    public string Status { get; set; } = null!;
+    public string? Note { get; set; }
+
     public int PaymethodID { get; set; }
 
     public int SalesChannelID { get; set; }
+
+    public decimal TotalAmount { get; set; }
 
     public virtual Employee Employee { get; set; } = null!;
 

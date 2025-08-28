@@ -13,6 +13,7 @@ public partial class QuotationDetail
 
     public decimal Price { get; set; }
 
+    public decimal? Discount { get; set; }
     public virtual ProductDetail ProductDetail { get; set; } = null!;
 
     public virtual Quotation Quotation { get; set; } = null!;

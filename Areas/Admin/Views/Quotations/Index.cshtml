@@ -29,6 +29,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
+            <th class="text-end">總金額</th>
             <th></th>
         </tr>
     </thead>
@@ -54,6 +55,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Status)
                 </td>
+             <td class="text-end">
+                @($"NT${item.QuotationDetail.Sum(d => d.Price * d.Quantity * (d.Discount ?? 1.0m)):N0}")
+            </td>
                 <td class="d-flex">
                     <a asp-action="Edit" asp-route-id="@item.QuotationID" class="btn btn-sm btn-outline-primary">編輯</a>
                     <a asp-action="Details" asp-route-id="@item.QuotationID" class="btn btn-sm btn-outline-info">詳細</a>

@@ -190,6 +190,8 @@ public partial class XiangYunDbContext : DbContext
                 .HasMaxLength(30)
                 .IsUnicode(false);
 
+            entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
+
             entity.HasOne(d => d.Employee).WithMany(p => p.Order)
                 .HasForeignKey(d => d.EmployeeID)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -209,6 +211,7 @@ public partial class XiangYunDbContext : DbContext
                 .HasForeignKey(d => d.SalesChannelID)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Order__SalesChan__08B54D69");
+
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>
@@ -357,6 +360,8 @@ public partial class XiangYunDbContext : DbContext
             entity.HasKey(e => new { e.QuotationID, e.ProductDetailID }).HasName("PK__Quotatio__B25F8FDA89C56EC6");
 
             entity.Property(e => e.Price).HasColumnType("decimal(12, 2)");
+
+            entity.Property(e => e.Discount).HasPrecision(3, 2);
 
             entity.HasOne(d => d.ProductDetail).WithMany(p => p.QuotationDetail)
                 .HasForeignKey(d => d.ProductDetailID)

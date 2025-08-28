@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "編輯報價單";
 }
+<div asp-validation-summary="All" class="text-danger"></div>
+
 
 <div class="container mt-4">
     <form asp-action="Edit">
@@ -70,9 +72,10 @@
                 <table class="table table-striped table-bordered">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 40%;">商品名稱 (規格)</th>
+                            <th style="width: 35%;">商品名稱 (規格)</th>
                             <th style="width: 15%;" class="text-end">單價</th>
-                            <th style="width: 15%;" class="text-center">數量</th>
+                            <th style="width: 10%;" class="text-center">數量</th>
+                            <th style="width: 10%;" class="text-center">折扣</th>
                             <th style="width: 15%;" class="text-end">小計</th>
                             <th style="width: 15%;" class="text-center">操作</th>
                         </tr>
@@ -97,8 +100,12 @@
                                 <td>
                                     <input type="number" name="QuotationDetail[@i].Quantity" class="form-control text-center quantity-input" value="@item.Quantity" min="1" />
                                 </td>
+                                <td>
+                                    <input type="number" name="QuotationDetail[@i].Discount" class="form-control text-center discount-input" value="@item.Discount" step="0.01" min="0" max="1" />
+                                </td>
+
                                 <td class="subtotal text-end pe-3 align-middle">
-                                    @((item.Price * item.Quantity).ToString("N2"))
+                                    @((item.Price * item.Quantity * (item.Discount ?? 1.0m)).ToString("N2"))
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-danger remove-item-btn">移除</button>
@@ -106,12 +113,12 @@
                             </tr>
                         }
                     </tbody>
-                    <tfoot>
+                    <tfoot>     
                         <tr class="fw-bold fs-5">
-                            <td colspan="3" class="text-end">總計金額：</td>
-                            <td id="grandTotal" class="text-end pe-3 text-danger"></td>
-                            <td></td>
+                            <td  colspan="5" class="text-end">總計金額：</td>
+                            <td id="grandTotal" class="text-center pe-3 text-danger"></td>
                         </tr>
+
                     </tfoot>
                 </table>
             </div>
@@ -135,12 +142,13 @@
 
     <script>
         $(document).ready(function () {
-
             let selectedProduct = null;
             const detailsTableBody = $('#quotationDetailsTableBody');
 
+            // 初始載入時計算一次總計 (主要用於 Edit 頁面)
             calculateTotals();
 
+            // --- AutoComplete 商品搜尋 (此部分邏輯不變) ---
             $("#productSearch").autocomplete({
                 source: function (request, response) {
                     $.ajax({
@@ -162,34 +170,33 @@
                 if($(this).val() === ""){ selectedProduct = null; }
             });
 
+
+            // --- 新增商品按鈕事件 ---
             $('#addProductBtn').on('click', function() {
-                
                 if (selectedProduct == null) {
                     alert('請先搜尋並從下拉選單中選擇一個商品規格！');
                     return;
                 }
-              
-                     const isExisting = detailsTableBody.find('input[name*="ProductDetailID"]').filter(function() {
-                        
-                    return String($(this).val()) === String(selectedProduct.productDetailID);
-                     }).length > 0;
 
-                 
+                const isExisting = detailsTableBody.find('input[name*="ProductDetailID"]').filter(function() {
+                    return String($(this).val()) === String(selectedProduct.productDetailId);
+                }).length > 0;
 
-                      if (isExisting) {
-                          alert('此商品規格已存在於報價單中，請直接修改數量。');
-                          return;
-                      }
+                if (isExisting) {
+                    alert('此商品規格已存在於報價單中，請直接修改數量。');
+                    return;
+                }
+
                 const index = detailsTableBody.find('tr').length;
-
-                // 【修改 #1】: 新增品項時，也使用 toLocaleString 格式化初始小計
+                // 新增品項時的初始小計 (價格 * 1 * 1.0)
                 const initialSubtotal = selectedProduct.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+                // 【重點】: 新增的 HTML row 必須包含 Discount 欄位
                 const newRow = `
                     <tr>
                         <td>
                             <input type="hidden" name="QuotationDetail[${index}].QuotationDetailID" value="0" />
-                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailID}" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailId}" />
                             ${selectedProduct.label}
                         </td>
                         <td>
@@ -197,6 +204,9 @@
                         </td>
                         <td>
                             <input type="number" name="QuotationDetail[${index}].Quantity" class="form-control text-center quantity-input" value="1" min="1" />
+                        </td>
+                        <td>
+                            <input type="number" name="QuotationDetail[${index}].Discount" class="form-control text-center discount-input" value="1.00" step="0.01" min="0" max="1" />
                         </td>
                         <td class="subtotal text-end pe-3 align-middle">
                             ${initialSubtotal}
@@ -211,41 +221,47 @@
                 calculateTotals();
             });
 
+            // --- 移除商品按鈕事件 ---
             detailsTableBody.on('click', '.remove-item-btn', function() {
                 $(this).closest('tr').remove();
                 calculateTotals();
                 reindexTableRows();
             });
 
-            detailsTableBody.on('input', '.price-input, .quantity-input', function() {
+            // --- 表格內輸入事件 (核心修改) ---
+            // 【重點】: 監聽事件加入了 .discount-input
+            detailsTableBody.on('input', '.price-input, .quantity-input, .discount-input', function() {
                 const row = $(this).closest('tr');
                 const price = parseFloat(row.find('.price-input').val()) || 0;
                 const quantity = parseInt(row.find('.quantity-input').val()) || 0;
-                const subtotal = price * quantity;
+                const discount = parseFloat(row.find('.discount-input').val()) || 1.0; // 如果折扣無效，預設為 1 (無折扣)
 
-                // 【修改 #2】: 修改數量/價格時，使用 toLocaleString 格式化小計
+                // 【重點】: 小計計算加入了 discount
+                const subtotal = price * quantity * discount;
+
                 const formattedSubtotal = subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 row.find('.subtotal').text(formattedSubtotal);
 
                 calculateTotals();
             });
 
+            // --- 計算總計函式 (此部分邏輯不變) ---
             function calculateTotals() {
                 let grandTotal = 0;
                 detailsTableBody.find('tr').each(function() {
-                    const subtotalText = $(this).find('.subtotal').text().replace(/,/g, ''); // 移除千分位符號再計算
+                    const subtotalText = $(this).find('.subtotal').text().replace(/,/g, '');
                     grandTotal += parseFloat(subtotalText) || 0;
                 });
-                // 總計也使用 toLocaleString 保持格式一致
                 $('#grandTotal').text(grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
 
+            // --- 重新索引函式 (此部分邏輯不變) ---
             function reindexTableRows() {
                 detailsTableBody.find('tr').each(function(newIndex) {
                     $(this).find('input, select').each(function() {
                         const oldName = $(this).attr('name');
                         if (oldName) {
-                            const newName = oldName.replace(/\\[\\d+\\]/, `[${newIndex}]`);
+                            const newName = oldName.replace(/\[\d+\]/, `[${newIndex}]`);
                             $(this).attr('name', newName);
                         }
                     });

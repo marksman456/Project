@@ -17,23 +17,6 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4 form-group mb-3">
-                    <label asp-for="QuotationNumber" class="control-label"></label>
-                    <input id="QuotationNumber" name="QuotationNumber" class="form-control" placeholder="系統將自動產生" readonly />
-                    <span asp-validation-for="QuotationNumber" class="text-danger"></span>
-                </div>
-                <div class="col-md-4 form-group mb-3">
-                    <label asp-for="QuoteDate" class="control-label"></label>
-                    <input asp-for="QuoteDate" class="form-control" type="date" />
-                    <span asp-validation-for="QuoteDate" class="text-danger"></span>
-                </div>
-                <div class="col-md-4 form-group mb-3">
-                    <label asp-for="Status" class="control-label"></label>
-                    <input asp-for="Status" class="form-control" readonly />
-                    <span asp-validation-for="Status" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="MemberID" class="control-label"></label>
                     <select asp-for="MemberID" class="form-select" asp-items="ViewBag.MemberName">
@@ -48,6 +31,25 @@
                     </select>
                     <span asp-validation-for="EmployeeID" class="text-danger"></span>
                 </div>
+            <div class="row">
+             
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="QuoteDate" class="control-label"></label>
+                    <input asp-for="QuoteDate" class="form-control" type="date" />
+                    <span asp-validation-for="QuoteDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="ValidityPeriod" class="control-label"></label>
+                    <input asp-for="ValidityPeriod" class="form-control" type="date" />
+                    <span asp-validation-for="ValidityPeriod" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="Status" class="control-label"></label>
+                    <input asp-for="Status" class="form-control" readonly />
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            </div>
+           
             </div>
         </div>
     </div>
@@ -74,11 +76,12 @@
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
-                        <th style="width:40%">商品名稱</th>
-                        <th style="width:15%">單價</th>
-                        <th style="width:15%">數量</th>
-                        <th style="width:20%">小計</th>
-                        <th style="width:10%">操作</th>
+                        <th style="width: 35%;">商品名稱 (規格)</th>
+                        <th style="width: 15%;" class="text-end">單價</th>
+                        <th style="width: 10%;" class="text-center">數量</th>
+                        <th style="width: 10%;" class="text-center">折扣</th>
+                        <th style="width: 15%;" class="text-end">小計</th>
+                        <th style="width: 15%;" class="text-center">操作</th>
                     </tr>
                 </thead>
                 <tbody id="quotationDetailsTableBody">
@@ -102,13 +105,43 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
     @* 【新增】: 商品搜尋 Autocomplete 的 jQuery 腳本 *@
     <script>
         $(document).ready(function () {
-            
+
+                  // --- 【新增】: 日期驗證邏輯 ---
+            const quoteDateInput = $('#QuoteDate');
+            const validityPeriodInput = $('#ValidityPeriod');
+
+            function validateDates() {
+                const quoteDate = quoteDateInput.val();
+                const validityPeriod = validityPeriodInput.val();
+
+                // 只有在兩個日期都有值的情況下才進行比較
+                if (quoteDate && validityPeriod) {
+                    if (new Date(validityPeriod) < new Date(quoteDate)) {
+                        alert('「有效期限」不能早於「報價日期」！');
+                        // 清空無效的有效期限
+                        validityPeriodInput.val('');
+                    }
+                }
+            }
+
+            // 為兩個日期輸入框都綁定 change 事件
+            quoteDateInput.on('change', validateDates);
+            validityPeriodInput.on('change', validateDates);
+            // --- 【新增結束】 ---
+
+
+
+
+
+
             // 用來暫存使用者選擇的商品資訊
             let selectedProduct = null;
+           
 
             $("#productSearch").autocomplete({
                 source: function (request, response) {
@@ -158,13 +191,13 @@
                 // 2. 檢查該商品是否已存在於明細中
                 // 我們用商品ID來檢查，避免重複加入
                 const isExisting = $(`#quotationDetailsTableBody input[name$=".ProductDetailID"][value="${selectedProduct.productDetailID}"]`).length > 0;
-                
+                 const initialSubtotal = selectedProduct.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
                 if (isExisting) {
                     alert('此商品已存在於報價單中，請直接修改數量。');
                     return;
                 }
-
+            
                 // 3. 準備 Table Row 的 HTML
                 const index = $('#quotationDetailsTableBody tr').length; // 取得目前的列數，作為新一列的索引
                 const newRow = `
@@ -177,12 +210,17 @@
                         <td>
                             <input type="number" name="QuotationDetail[${index}].Price" class="form-control price-input" value="${selectedProduct.price.toFixed(2)}" step="0.01" />
                         </td>
+
                         <td>
                             <input type="number" name="QuotationDetail[${index}].Quantity" class="form-control quantity-input" value="1" min="1" />
                         </td>
-                        <td class="subtotal text-end pe-3">
-                            ${selectedProduct.price.toFixed(2)}
+
+                        <td>
+                        <input type="number" name="QuotationDetail[${index}].Discount" class="form-control text-center discount-input" value="1.00" step="0.01" min="0" max="1" />
                         </td>
+                        
+                         <td class="subtotal text-end pe-3 align-middle">${initialSubtotal}</td>
+
                         <td class="text-center">
                             <button type="button" class="btn btn-sm btn-danger remove-item-btn">移除</button>
                         </td>
@@ -210,23 +248,24 @@
             });
 
             // 【新增】: 2. 即時計算金額功能 (使用事件委派)
-            $('#quotationDetailsTableBody').on('input', '.price-input, .quantity-input', function() {
+            $('#quotationDetailsTableBody').on('input', '.price-input, .quantity-input.discount-input', function() {
                 const row = $(this).closest('tr');
                 const price = parseFloat(row.find('.price-input').val()) || 0;
                 const quantity = parseInt(row.find('.quantity-input').val()) || 0;
-                const subtotal = price * quantity;
-                row.find('.subtotal').text(subtotal.toFixed(2)); // 更新小計
+                const discount = parseFloat(row.find('.discount-input').val()) || 1; // 如果折扣無效，預設為 1 (無折扣)
+                const subtotal = price * quantity * discount;
+                row.find('.subtotal').text(subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                 calculateTotals(); // 任何變動都重新計算總價
             });
 
             // 【新增】: 3. 計算總金額的共用函式
-            function calculateTotals() {
+              function calculateTotals() {
                 let grandTotal = 0;
-                 $('#quotationDetailsTableBody').find('tr').each(function() {
-                    const subtotalText = $(this).find('.subtotal').text();
+               $('#quotationDetailsTableBody').find('tr').each(function() {
+                    const subtotalText = $(this).find('.subtotal').text().replace(/,/g, '');
                     grandTotal += parseFloat(subtotalText) || 0;
                 });
-                $('#grandTotal').text(grandTotal.toFixed(2)); // 更新總計金額
+                $('#grandTotal').text(grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
                    // 【新功能 4】: 重新編排索引的函式
             function reindexTableRows() {

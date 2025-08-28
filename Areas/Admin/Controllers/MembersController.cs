@@ -147,6 +147,7 @@ namespace Project.Areas.Admin.Controllers
 
             var member = await _context.Member
                 .FirstOrDefaultAsync(m => m.MemberID == id);
+
             if (member == null)
             {
                 return NotFound();

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
+using static Project.Models.ViewModels.QuotationEditViewModel;
 
 namespace Project.Areas.Admin.Controllers
 {
@@ -25,7 +26,7 @@ namespace Project.Areas.Admin.Controllers
         // GET: Admin/Quotations
         public async Task<IActionResult> Index()
         {
-            var quotations = await _context.Quotation.Include(q => q.Employee).Include(q => q.Member).OrderByDescending(q=>q.CreatedDate).ToListAsync();
+            var quotations = await _context.Quotation.Include(q => q.Employee).Include(q => q.Member).Include(q=>q.QuotationDetail).OrderByDescending(q=>q.CreatedDate).ToListAsync();
 
             return View(quotations);
         }
@@ -168,6 +169,7 @@ namespace Project.Areas.Admin.Controllers
                     ProductDetailID = qd.ProductDetailID,
                     Price = qd.Price,
                     Quantity = qd.Quantity,
+                    Discount = qd.Discount,
                     ProductNameAndSpec = $"{qd.ProductDetail?.Product?.ProductName} ({string.Join(", ", qd.ProductDetail?.Product?.ProductModel?.ModelSpec.Select(ms => ms.SpecValue) ?? Enumerable.Empty<string>())})"
                 }).ToList()
             };
@@ -187,6 +189,12 @@ namespace Project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, QuotationEditViewModel viewModel)
         {
+
+
+            //debug用
+            System.Diagnostics.Debug.WriteLine("=== POST Edit 方法已進入 ===");
+
+
             if (id != viewModel.QuotationID) return NotFound();
 
             if (ModelState.IsValid)
@@ -195,7 +203,11 @@ namespace Project.Areas.Admin.Controllers
                     .Include(q => q.QuotationDetail)
                     .FirstOrDefaultAsync(q => q.QuotationID == id);
 
-                if (quotationInDb == null) return NotFound();
+                if (quotationInDb == null)
+                {
+                    return NotFound();
+                }
+
 
                 // --- 將 ViewModel 的變動，手動映射回 Entity Model ---
                 quotationInDb.MemberID = viewModel.MemberID;

@@ -15,7 +15,10 @@ public partial class InventoryMovement
 
     public int Quantity { get; set; }
 
+
+    public int? RelatedOrderID { get; set; }
     public string? Note { get; set; }
 
+    public virtual Order? RelatedOrder { get; set; }
     public virtual ProductDetail ProductDetail { get; set; } = null!;
 }

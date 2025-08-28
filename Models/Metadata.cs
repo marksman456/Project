@@ -169,7 +169,14 @@ namespace Project.Models
 
         [Display(Name = "報價日期")]
         [DataType(DataType.Date)]
+        [Required(ErrorMessage = "報價日期必填")]
         public DateOnly QuoteDate { get; set; }
+
+        [Display(Name = "有效期限")]
+        public DateOnly? ValidityPeriod { get; set; }
+
+
+
 
         [Display(Name = "狀態")]
         [Required]
