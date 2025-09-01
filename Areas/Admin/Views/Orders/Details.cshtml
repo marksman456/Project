@@ -1,72 +1,100 @@
 ﻿@model Project.Models.Order
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "訂單詳細資料";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
+<hr />
 
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeliveryDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeliveryDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ArrivalDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ArrivalDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsPaid)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsPaid)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Employee)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Employee.EmployeeID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Member)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Member.MemberID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Paymethod)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Paymethod.PaymethodID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SalesChannel)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SalesChannel.SalesChannelID)
-        </dd>
-    </dl>
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">訂單編號</dt>
+            <dd class="col-sm-8">@Model.OrderNumber</dd>
+
+            <dt class="col-sm-4">訂單日期</dt>
+            <dd class="col-sm-8">@Model.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
+
+            <dt class="col-sm-4">客戶名稱</dt>
+            <dd class="col-sm-8">@Model.Member.Name</dd>
+
+            <dt class="col-sm-4">經手員工</dt>
+            <dd class="col-sm-8">@Model.Employee.Name</dd>
+        </dl>
+    </div>
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">訂單狀態</dt>
+            <dd class="col-sm-8">@Model.Status</dd>
+
+            <dt class="col-sm-4">付款狀態</dt>
+            <dd class="col-sm-8">
+                @if (Model.IsPaid)
+                {
+                    <span class="badge bg-success">已付款</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">未付款</span>
+                }
+            </dd>
+
+            <dt class="col-sm-4">付款方式</dt>
+            <dd class="col-sm-8">@Model.Paymethod?.PaymethodName</dd>
+
+            <dt class="col-sm-4">銷售管道</dt>
+            <dd class="col-sm-8">@Model.SalesChannel?.SalesChannelName</dd>
+        </dl>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.OrderID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="row mt-2">
+    <div class="col-12">
+        <dl class="row">
+            <dt class="col-sm-2">備註</dt>
+            <dd class="col-sm-10">@Model.Note</dd>
+        </dl>
+    </div>
+</div>
+
+
+<h4 class="mt-4">訂單明細</h4>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>商品名稱</th>
+            <th>序號</th>
+            <th class="text-end">單價</th>
+            <th class="text-center">數量</th>
+            <th class="text-center">折扣</th>
+            <th class="text-end">小計</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderDetail)
+        {
+            // 因為所有型別都已是 decimal，不再需要 (decimal) 強制轉型
+            var subtotal = item.Price * item.Quantity * (item.Discount ?? 1.0m);
+            <tr>
+                <td>@item.ProductDetail.Product.ProductName</td>
+                <td>@item.ProductDetail.SerialNumber</td>
+                <td class="text-end">@item.Price.ToString("N0")</td>
+                <td class="text-center">@item.Quantity</td>
+                <td class="text-center">
+                    @(item.Discount == null || item.Discount.Value == 1.0m ? "--" : $"{(item.Discount.Value * 10).ToString("0.#")}折")
+                </td>
+                <td class="text-end">@subtotal.ToString("N0")</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" class="text-end fw-bold">總計</td>
+            <td class="text-end fw-bold">@Model.TotalAmount.ToString("N0")</td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">返回列表</a>
 </div>

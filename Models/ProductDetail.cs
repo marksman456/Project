@@ -9,13 +9,15 @@ public partial class ProductDetail
 
     public int ProductID { get; set; }
 
-    public string SerialNumber { get; set; } = null!;
+    public string? SerialNumber { get; set; } = null!;
 
     public DateOnly? PurchaseDate { get; set; }
 
     public string Status { get; set; } = null!;
 
+    public int Quantity { get; set; }
     public decimal Price { get; set; }
+
 
     public virtual ICollection<InventoryMovement> InventoryMovement { get; set; } = new List<InventoryMovement>();
 

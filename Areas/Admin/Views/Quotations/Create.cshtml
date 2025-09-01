@@ -248,7 +248,7 @@
             });
 
             // 【新增】: 2. 即時計算金額功能 (使用事件委派)
-            $('#quotationDetailsTableBody').on('input', '.price-input, .quantity-input.discount-input', function() {
+           $('#quotationDetailsTableBody').on('input', '.price-input, .quantity-input, .discount-input', function() {
                 const row = $(this).closest('tr');
                 const price = parseFloat(row.find('.price-input').val()) || 0;
                 const quantity = parseInt(row.find('.quantity-input').val()) || 0;

@@ -88,7 +88,7 @@
                             <tr>
                                 <td>
                                     @* 隱藏欄位，用來傳遞 QuotationDetailID 和 ProductDetailID *@
-                                    <input type="hidden" name="QuotationDetail[@i].QuotationDetailID" value="@item.QuotationID" />
+                                    <input type="hidden" name="QuotationDetail[@i].QuotationID" value="@item.QuotationDetailID" />
                                     <input type="hidden" name="QuotationDetail[@i].ProductDetailID" value="@item.ProductDetailID"/>
 
                                     @item.ProductNameAndSpec
@@ -179,7 +179,7 @@
                 }
 
                 const isExisting = detailsTableBody.find('input[name*="ProductDetailID"]').filter(function() {
-                    return String($(this).val()) === String(selectedProduct.productDetailId);
+                    return String($(this).val()) === String(selectedProduct.productDetailID);
                 }).length > 0;
 
                 if (isExisting) {
@@ -195,8 +195,8 @@
                 const newRow = `
                     <tr>
                         <td>
-                            <input type="hidden" name="QuotationDetail[${index}].QuotationDetailID" value="0" />
-                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailId}" />
+                            <input type="hidden" name="QuotationDetail[${index}].QuotationID" value="0" />
+                            <input type="hidden" name="QuotationDetail[${index}].ProductDetailID" value="${selectedProduct.productDetailID}" />
                             ${selectedProduct.label}
                         </td>
                         <td>

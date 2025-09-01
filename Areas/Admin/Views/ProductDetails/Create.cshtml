@@ -1,0 +1,94 @@
+﻿@model Project.Models.ProductDetail
+
+@{
+    ViewData["Title"] = "進貨登錄";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h4>新增庫存品項</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="ProductID" class="control-label">產品系列</label>
+                <select id="productSelector" asp-for="ProductID" class="form-select" asp-items="ViewBag.Products">
+                    <option value="">-- 請選擇一個產品系列 --</option>
+                </select>
+                <span asp-validation-for="ProductID" class="text-danger"></span>
+            </div>
+
+            <div id="serialNumberGroup" class="mb-3" style="display:none;">
+                <label asp-for="SerialNumber" class="control-label">產品序號</label>
+                <input asp-for="SerialNumber" class="form-control" />
+                <span asp-validation-for="SerialNumber" class="text-danger"></span>
+            </div>
+
+            <div id="quantityGroup" class="mb-3" style="display:none;">
+                <label asp-for="Quantity" class="control-label">數量</label>
+                <input asp-for="Quantity" class="form-control" value="1" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PurchaseDate" class="control-label">進貨日期</label>
+                <input asp-for="PurchaseDate" class="form-control" type="date" />
+                <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Price" class="control-label">採購單價 (成本)</label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="新增庫存" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#productSelector').on('change', function () {
+                const productId = $(this).val();
+                const serialNumberGroup = $('#serialNumberGroup');
+                const quantityGroup = $('#quantityGroup');
+
+                // 先隱藏所有動態欄位
+                serialNumberGroup.hide();
+                quantityGroup.hide();
+
+                if (productId) {
+                    // 發送 AJAX 請求到 ProductsController 獲取產品資訊
+                    $.ajax({
+                        url: '@Url.Action("GetProductInfo", "Products", new { Area = "Admin" })',
+                        type: 'GET',
+                        data: { id: productId },
+                        success: function (product) {
+                            if (product.isSerialized) {
+                                // 序號化商品：顯示序號欄位，數量永遠是 1
+                                serialNumberGroup.show();
+                                quantityGroup.hide();
+                                quantityGroup.find('input').val(1); // 將數量設為 1
+                            } else {
+                                // 非序號化商品：顯示數量欄位，隱藏序號欄位
+                                quantityGroup.show();
+                                serialNumberGroup.hide();
+                                serialNumberGroup.find('input').val(''); // 清空序號
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

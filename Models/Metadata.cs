@@ -175,7 +175,8 @@ namespace Project.Models
         [Display(Name = "有效期限")]
         public DateOnly? ValidityPeriod { get; set; }
 
-
+        [Display(Name = "備註")]
+        public string? Note { get; set; }
 
 
         [Display(Name = "狀態")]

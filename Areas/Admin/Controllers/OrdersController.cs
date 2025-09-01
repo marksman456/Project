@@ -19,7 +19,7 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
         // POST: Admin/Orders/CreateFromQuotation
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFromQuotation(int quotationId)
+        public async Task<IActionResult> CreateFromQuotation(int quotationId, int paymethodId, int salesChannelId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -45,8 +45,9 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
                     IsPaid = false,
                     Status = "訂單成立",
                     Note = quotation.Note,
-                    // 【最終版】: 計算總金額時，考慮折扣
-                    TotalAmount = quotation.QuotationDetail.Sum(d => d.Price * d.Quantity * (d.Discount ?? 1.0m))
+                    TotalAmount = quotation.QuotationDetail.Sum(d => d.Price * d.Quantity * (d.Discount ?? 1.0m)),
+                    PaymethodID = paymethodId,
+                    SalesChannelID = salesChannelId
                 };
 
                 // --- 複製明細 (已包含 Discount) ---
@@ -57,7 +58,7 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
                         ProductDetailID = quoteDetail.ProductDetailID,
                         Price = quoteDetail.Price,
                         Quantity = quoteDetail.Quantity,
-                        //Discount = quoteDetail.Discount ?? 1.0 // 如果折扣為 null, 則存入 1.0 (無折扣)
+                        Discount = quoteDetail.Discount ?? 1.0m
                     });
                 }
 
@@ -72,7 +73,7 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
                     {
                         ProductDetailID = quoteDetail.ProductDetailID,
                         MovementDate = DateTime.Now,
-                        MovementType = "Sale",
+                        MovementType = "銷售出貨",
                         Quantity = -1,
                         // 【最終版】: 建立庫存異動與新訂單的關聯
                         RelatedOrder = order
@@ -93,20 +94,47 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                TempData["ErrorMessage"] = "發生未預期的錯誤，訂單建立失敗：" + ex.Message;
+                TempData["ErrorMessage"] = "發生未預期的錯誤，訂單建立失敗：" + ex.Message + (ex.InnerException != null ? " | " + ex.InnerException.Message : "");
                 return RedirectToAction("Details", "Quotations", new { id = quotationId });
             }
         }
 
+
+        public async Task<IActionResult> Index()
+        {
+            var orders = await _context.Order
+                .Include(o => o.Member)        // 載入關聯的客戶資料
+                .Include(o => o.Employee)      // 載入關聯的員工資料
+                .OrderByDescending(o => o.OrderDate) // 讓最新的訂單顯示在最上面
+                .ToListAsync();
+
+            return View(orders);
+        }
+
+        // GET: Admin/Orders/Details/5
         // GET: Admin/Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            var order = await _context.Order.FirstOrDefaultAsync(m => m.OrderID == id);
-            if (order == null) return NotFound();
+            var order = await _context.Order
+                .Include(o => o.Member)        // 載入客戶
+                .Include(o => o.Employee)      // 載入員工
+                .Include(o => o.Paymethod) // 載入付款方式
+                .Include(o => o.SalesChannel)  // 載入銷售管道
+                .Include(o => o.OrderDetail)   // 載入訂單明細
+                    .ThenInclude(od => od.ProductDetail) // 根據明細，載入庫存品項
+                        .ThenInclude(pd => pd.Product)   // 根據庫存品項，載入產品主檔
+                .FirstOrDefaultAsync(m => m.OrderID == id);
 
-            // 暫時返回一個簡單的 View
+            if (order == null)
+            {
+                return NotFound();
+            }
+
             return View(order);
         }
 

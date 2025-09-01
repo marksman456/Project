@@ -1,83 +1,49 @@
 ﻿@model IEnumerable<Project.Models.Order>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "訂單管理";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<table class="table table-striped table-hover">
+    <thead class="table-light">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeliveryDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArrivalDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsPaid)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employee)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Member)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Paymethod)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SalesChannel)
-            </th>
+            <th>訂單編號</th>
+            <th>客戶名稱</th>
+            <th>經手員工</th>
+            <th>訂單日期</th>
+            <th class="text-end">總金額</th>
+            <th>訂單狀態</th>
+            <th>付款狀態</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeliveryDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArrivalDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsPaid)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Employee.EmployeeID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.MemberID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Paymethod.PaymethodID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SalesChannel.SalesChannelID)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.OrderID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.OrderID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.OrderID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.OrderNumber)</td>
+                <td>@Html.DisplayFor(modelItem => item.Member.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Employee.Name)</td>
+                <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                <td class="text-end">@item.TotalAmount.ToString("N0")</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @if (item.IsPaid)
+                    {
+                        <span class="badge bg-success">已付款</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">未付款</span>
+                    }
+                </td>
+                <td>
+                    @* 未來可以加上編輯狀態或詳細資料的連結 *@
+                    <a asp-action="Details" asp-route-id="@item.OrderID" class="btn btn-sm btn-info">詳細資料</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

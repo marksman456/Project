@@ -19,6 +19,8 @@ public partial class Product
 
     public string? ProductImage { get; set; }
 
+    public bool IsSerialized { get; set; }
+
     public virtual ICollection<ProductDetail> ProductDetail { get; set; } = new List<ProductDetail>();
 
     public virtual ProductModel ProductModel { get; set; } = null!;

@@ -195,8 +195,18 @@ namespace Project.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Admin/Products/GetProductInfo/5
+        [HttpGet]
+        public async Task<IActionResult> GetProductInfo(int id)
+        {
+            var product = await _context.Product.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Json(new { isSerialized = product.IsSerialized });
+        }
 
-        // 【已重構為使用 DTO】: AJAX 商品搜尋 API
         [HttpGet]
         public async Task<IActionResult> SearchProducts(string keyword)
         {
@@ -205,19 +215,26 @@ namespace Project.Areas.Admin.Controllers
                 return Json(new List<ProductSearchDTO>());
             }
 
-            // 根據傳入的搜尋字詞 (Keyword)，查詢商品名稱或 SKU 包含該字詞的商品
-            var products = await _context.ProductDetail.Include(pd=>pd.Product).ThenInclude(p=>p.ProductModel).ThenInclude(pm => pm.ModelSpec)
-                .Where(pd => pd.Status == "庫存中" && pd.Product.ProductName.Contains(keyword) || pd.Product.ProductModel.ModelSpec.Any(ms => ms.SpecValue.Contains(keyword)))
-                // 【修改】: 將 new { ... } 改為 new ProductSearchDTO { ... }
+            var products = await _context.ProductDetail
+                .Include(pd => pd.Product)
+                    .ThenInclude(p => p.ProductModel)
+                        .ThenInclude(pm => pm.ModelSpec)
+                .Where(pd => pd.Status == "庫存中" &&
+                    (
+                        pd.Product.ProductName.Contains(keyword) ||
+                        pd.Product.ProductSKU.Contains(keyword) ||
+                        pd.Product.ProductModel.ModelSpec.Any(ms => ms.SpecValue.Contains(keyword))
+                    )
+                )
                 .Select(pd => new ProductSearchDTO
                 {
                     ProductDetailID = pd.ProductDetailID,
                     Label = pd.Product.ProductName + " (" +
-                    string.Join(", ", pd.Product.ProductModel.ModelSpec.Select(ms => ms.SpecValue)) +
-                    ")",
+                            string.Join(", ", pd.Product.ProductModel.ModelSpec.Select(ms => ms.SpecValue)) +
+                            ")",
                     Price = pd.Price,
                 })
-                .Take(10) // 最多只回傳 10 筆結果
+                .Take(10)
                 .ToListAsync();
 
             return Json(products);
@@ -226,5 +243,7 @@ namespace Project.Areas.Admin.Controllers
         {
             return _context.Product.Any(e => e.ProductID == id);
         }
+
     }
+
 }

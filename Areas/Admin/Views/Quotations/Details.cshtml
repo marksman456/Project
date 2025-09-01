@@ -95,28 +95,66 @@
         </div>
 
 
-      
-    
-    
-      
+
+
 
 
         <div class="card-footer text-center">
             <div class="d-flex justify-content-center gap-2">
                 <a asp-action="Edit" asp-route-id="@Model.QuotationID" class="btn btn-primary">編輯訂單</a>
+                
 
-                @if (Model.Status == "報價中")
-                {
-                    <form asp-area="Admin" asp-controller="Orders" asp-action="CreateFromQuotation" method="post" class="d-inline">
-                        <input type="hidden" name="quotationId" value="@Model.QuotationID" />
-                        <button type="submit" class="btn btn-success"
-                                onclick="return confirm('您確定要將此報價單轉換為正式訂單嗎？這將會更新庫存狀態。');">
-                            <i class="bi bi-cart-check-fill"></i> 建立訂單
-                        </button>
+@* --- 請將原本的「建立訂單」按鈕區塊，完整替換為以下程式碼 --- *@
+        <div>
+            @* 只有當報價單狀態為「報價中」，才顯示此按鈕 *@
+            @if (Model.Status == "報價中")
+            {
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+                    <i class="bi bi-cart-check-fill"></i> 建立訂單
+                </button>
+            }
+        </div>
+
+        <div class="modal fade" id="createOrderModal" tabindex="-1" aria-labelledby="createOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form asp-area="Admin" asp-controller="Orders" asp-action="CreateFromQuotation" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createOrderModalLabel">建立訂單 - @Model.QuotationNumber</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>請確認此訂單的最終資訊：</p>
+
+                            @* 將 QuotationID 透過隱藏欄位傳遞 *@
+                            <input type="hidden" name="quotationId" value="@Model.QuotationID" />
+
+                            <div class="mb-3">
+                                <label for="paymethodId" class="form-label">付款方式</label>
+                                <select name="paymethodId" class="form-select" asp-items="ViewBag.Paymethods" required>
+                                    <option value="">-- 請選擇 --</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="salesChannelId" class="form-label">銷售管道</label>
+                                <select name="salesChannelId" class="form-select" asp-items="ViewBag.SalesChannels" required>
+                                    <option value="">-- 請選擇 --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary" onclick="return confirm('您確定要將此報價單轉換為正式訂單嗎？');">確認建立</button>
+                        </div>
                     </form>
-                }
+
+                           
+                </div>
+            </div>
+        </div>
                 <a asp-action="Index" class="btn btn-secondary">返回列表</a>
             </div>
+           
         </div>
     </div>
 </div>

@@ -51,6 +51,8 @@ namespace Project.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            ViewBag.Paymethods = new SelectList(_context.Paymethod, "PaymethodID", "PaymethodName");
+            ViewBag.SalesChannels = new SelectList(_context.SalesChannel, "SalesChannelID", "SalesChannelName");
             return View(quotation);
         }
 
@@ -232,6 +234,7 @@ namespace Project.Areas.Admin.Controllers
                         {
                             detailInDb.Price = detailViewModel.Price;
                             detailInDb.Quantity = detailViewModel.Quantity;
+                            detailInDb.Discount = detailViewModel.Discount;
                         }
                     }
                     else // 新增
@@ -240,7 +243,8 @@ namespace Project.Areas.Admin.Controllers
                         {
                             ProductDetailID = detailViewModel.ProductDetailID,
                             Price = detailViewModel.Price,
-                            Quantity = detailViewModel.Quantity
+                            Quantity = detailViewModel.Quantity,
+                            Discount = detailViewModel.Discount
                         });
                     }
                 }
