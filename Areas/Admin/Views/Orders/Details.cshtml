@@ -95,6 +95,24 @@
     </tfoot>
 </table>
 
+@if (!Model.IsPaid)
+{
+    <form asp-action="MarkAsPaid" asp-route-id="@Model.OrderID" method="post" class="d-inline">
+        <button type="submit" class="btn btn-success" onclick="return confirm('您確定要將此訂單標記為「已付款」嗎？此操作無法復原。')">
+            <i class="bi bi-check-circle-fill"></i> 標記為已付款
+        </button>
+    </form>
+}
+
+@if (Model.Status == "待出貨")
+{
+    <form asp-action="MarkAsShipped" asp-route-id="@Model.OrderID" method="post" class="d-inline">
+        <button type="submit" class="btn btn-info" onclick="return confirm('您確定要將此訂單標記為「已出貨」嗎？')">
+            <i class="bi bi-truck"></i> 標記為已出貨
+        </button>
+    </form>
+}
+
 <div class="mt-3">
     <a asp-action="Index" class="btn btn-secondary">返回列表</a>
 </div>

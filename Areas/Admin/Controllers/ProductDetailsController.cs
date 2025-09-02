@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
+using Project.Models.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class ProductDetailsController : Controller
     {
         private readonly XiangYunDbContext _context;
@@ -21,11 +24,23 @@ namespace Project.Areas.Admin.Controllers
         }
 
         // GET: Admin/ProductDetails
-        public async Task<IActionResult> Index()
+       
+          public async Task<IActionResult> Index()
         {
-            var xiangYunDbContext = _context.ProductDetail.Include(p => p.Product);
-            return View(await xiangYunDbContext.ToListAsync());
+            var allStock = await _context.ProductDetail
+                .Include(p => p.Product)
+                .OrderByDescending(p => p.PurchaseDate)
+                .ToListAsync();
+
+            var viewModel = new ProductDetailIndexViewModel
+            {
+                SerializedItems = allStock.Where(p => p.Product.IsSerialized).ToList(),
+                NonSerializedItems = allStock.Where(p => !p.Product.IsSerialized).ToList()
+            };
+
+            return View(viewModel);
         }
+        
 
         // GET: Admin/ProductDetails/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -220,39 +235,7 @@ namespace Project.Areas.Admin.Controllers
             return View(productDetail);
         }
 
-        // GET: Admin/ProductDetails/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var productDetail = await _context.ProductDetail
-                .Include(p => p.Product)
-                .FirstOrDefaultAsync(m => m.ProductDetailID == id);
-            if (productDetail == null)
-            {
-                return NotFound();
-            }
-
-            return View(productDetail);
-        }
-
-        // POST: Admin/ProductDetails/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var productDetail = await _context.ProductDetail.FindAsync(id);
-            if (productDetail != null)
-            {
-                _context.ProductDetail.Remove(productDetail);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+       
 
         private bool ProductDetailExists(int id)
         {

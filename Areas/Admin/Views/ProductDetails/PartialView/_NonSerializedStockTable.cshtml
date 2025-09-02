@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Project.Models.ProductDetail>
+
+<table class="table table-sm table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>產品系列</th>
+            <th class="text-center">庫存數量</th>
+            <th>狀態</th>
+            <th class="text-end">平均成本</th>
+            <th>最近進貨日</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Product.ProductName</td>
+                <td class="text-center"><strong>@item.Quantity</strong></td>
+                <td>
+                    @if (item.Status == "庫存中")
+                    {
+                        <span class="badge bg-success">@item.Status</span>
+                    }
+                    else
+                    {
+
+                        <span class="badge bg-secondary">@item.Status</span>
+                    }
+                </td>
+                <td class="text-end">@item.Price.ToString("N0")</td>
+                <td>@item.PurchaseDate?.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductDetailID">編輯</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductDetailID">詳細資料</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

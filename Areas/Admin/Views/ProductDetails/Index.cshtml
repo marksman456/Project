@@ -1,65 +1,34 @@
-﻿@model IEnumerable<Project.Models.ProductDetail>
+﻿@model Project.Models.ViewModels.ProductDetailIndexViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "庫存列表";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>@ViewData["Title"]</h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle-fill"></i> 進貨登錄
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SerialNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PurchaseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SerialNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PurchaseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Product.ProductName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductDetailID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductDetailID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductDetailID">Delete</a>
-            </td>
-        </tr>
+
+<h3 class="mt-4">序號化商品庫存 (@Model.SerializedItems.Count(i => i.Status == "庫存中") 筆可用)</h3>
+@if (Model.SerializedItems.Any())
+{
+    @await Html.PartialAsync("PartialView/_SerializedStockTable", Model.SerializedItems)
 }
-    </tbody>
-</table>
+else
+{
+    <p class="text-muted">目前沒有任何序號化商品庫存。</p>
+}
+
+
+<h3 class="mt-5">批量商品庫存</h3>
+@if (Model.NonSerializedItems.Any())
+{
+    @await Html.PartialAsync("PartialView/_NonSerializedStockTable", Model.NonSerializedItems)
+}
+else
+{
+    <p class="text-muted">目前沒有任何批量商品庫存。</p>
+}

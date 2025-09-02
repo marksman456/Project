@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
@@ -14,6 +15,7 @@ using static Project.Models.ViewModels.QuotationEditViewModel;
 namespace Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class QuotationsController : Controller
     {
         private readonly XiangYunDbContext _context;

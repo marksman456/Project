@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,6 +19,7 @@ namespace Project.Areas.Admin.Controllers
 {
 
     [Area("Admin")]
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly XiangYunDbContext _context;
