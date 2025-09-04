@@ -79,6 +79,9 @@ namespace Project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         // 【修改】為了能接收到完整的明細資料，我們稍微調整 Bind 的內容，或直接接收 Quotation 物件
         // 這裡我們直接接收 Quotation 物件，讓模型繫結器自動處理主檔與明細
+
+        //!!!!!安全疑慮 使用viewmodel 更好 之後優化 (時間不夠)!!!!!!
+
         public async Task<IActionResult> Create(Quotation quotation)
         {
             // 移除 QuotationNumber 的模型驗證，因為它是後端產生的

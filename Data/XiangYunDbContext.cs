@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Project.Data;
 
@@ -56,6 +57,26 @@ public partial class XiangYunDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        // --- 【最終修正版】 ---
+        // 這段設定告訴 XiangYunDbContext Identity 表的存在，但同時將它們從自己的遷移計畫中排除。
+        modelBuilder.Entity<IdentityUser>(b =>
+        {
+            b.ToTable("AspNetUsers", t => t.ExcludeFromMigrations()); // <-- 新增 ExcludeFromMigrations
+        });
+
+        modelBuilder.Entity<IdentityRole>(b =>
+        {
+            b.ToTable("AspNetRoles", t => t.ExcludeFromMigrations()); // <-- 新增 ExcludeFromMigrations
+        });
+
+        modelBuilder.Entity<IdentityUserRole<string>>(b =>
+        {
+            b.ToTable("AspNetUserRoles", t => t.ExcludeFromMigrations()); // <-- 新增 ExcludeFromMigrations
+            b.HasKey(ur => new { ur.UserId, ur.RoleId });
+        });
+
         modelBuilder.Entity<Account>(entity =>
         {
             entity.HasKey(e => e.Username).HasName("PK__Account__536C85E5260F1375");

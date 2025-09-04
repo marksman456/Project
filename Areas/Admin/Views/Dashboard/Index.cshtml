@@ -1,0 +1,146 @@
+﻿@model Project.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "儀表板總覽";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">本月營業額 (NT$)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.MonthlyRevenue.ToString("N0")</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">待出貨訂單</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingOrdersCount</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-box fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">今日新增報價單</div>
+                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@Model.QuotesTodayCount</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-file-invoice fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">庫存品項總數</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalStockItemsCount</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-warehouse fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">最新訂單</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tbody>
+                            @foreach (var order in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td><a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderID">@order.OrderNumber</a></td>
+                                    <td>@order.Member.Name</td>
+                                    <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                                    <td class="text-end">@order.TotalAmount.ToString("N0")</td>
+                                    <td>
+                                        @if (order.Status == "待出貨")
+                                        {
+                                            <span class="badge bg-warning">待出貨</span>
+                                        }
+                                        else if (order.Status == "已出貨")
+                                        {
+
+                                            <span class="badge bg-info">已出貨</span>
+                                        }
+                                        else if (order.Status == "已完成")
+                                        {
+
+                                            <span class="badge bg-success">已完成</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="badge bg-secondary">@order.Status</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">待辦事項 & 庫存警示</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a asp-area="Admin" asp-controller="Orders" asp-action="Index">待出貨訂單</a>
+                        <span class="badge bg-danger rounded-pill">@Model.PendingOrdersCount</span>
+                    </li>
+                </ul>
+                @if (Model.LowStockItems.Any())
+                {
+                    <hr />
+                    <h6 class="mt-3">低庫存商品</h6>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in Model.LowStockItems)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @item.Product.ProductName
+                                <span class="badge bg-warning rounded-pill">剩 @item.Quantity</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* 為了讓卡片邊框顏色和圖示生效，您可能需要在 _Layout.cshtml 中引入 Font Awesome 和一個小小的 CSS *@

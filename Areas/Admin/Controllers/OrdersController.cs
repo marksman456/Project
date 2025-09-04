@@ -155,6 +155,7 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MarkAsPaid(int id)
         {
             var order = await _context.Order.FindAsync(id);
@@ -184,6 +185,7 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MarkAsShipped(int id)
         {
             var order = await _context.Order.FindAsync(id);

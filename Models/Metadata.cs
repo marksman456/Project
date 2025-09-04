@@ -71,6 +71,27 @@ namespace Project.Models
 
         [Display(Name = "是否離職")]
         public bool Resignation { get; set; }
+
+        [Display(Name = "職稱")]
+        public string? Title { get; set; }
+
+        [Display(Name = "手機")]
+        public string? Phone { get; set; }
+
+        [Display(Name = "地址")]
+        public string? Address { get; set; }
+
+        [Display(Name = "信箱")]
+        public string? Email { get; set; }
+
+        [Display(Name = "性別")]
+        public string? Gender { get; set; }
+
+        [Display(Name = "生日")]
+        public DateOnly? Birthday { get; set; }
+
+        [Display(Name = "備註")]
+        public string? Note { get; set; }
     }
 
     //======================== Product Metadata ========================

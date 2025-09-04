@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace Project.Models;
 
 public partial class Employee
 {
+   
     public int EmployeeID { get; set; }
 
     public string EmployeeNumber { get; set; } = null!;
@@ -18,6 +21,8 @@ public partial class Employee
     public string? Email { get; set; }
 
     public string? Gender { get; set; }
+    public string? Title { get; set; }
+
 
     public DateOnly? Birthday { get; set; }
 
@@ -34,4 +39,7 @@ public partial class Employee
     public virtual ICollection<ShippingOrder> ShippingOrder { get; set; } = new List<ShippingOrder>();
 
     public virtual ICollection<Role> Role { get; set; } = new List<Role>();
+
+    public string? UserId { get; set; } // 用來儲存 AspNetUsers 表的 Id
+    public virtual IdentityUser? User { get; set; } // 導覽屬性
 }

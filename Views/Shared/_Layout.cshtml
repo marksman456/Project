@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -13,19 +16,40 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Project</a>
+                <a class="navbar-brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">儀錶板</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Members" asp-action="Index">會員管理</a>
+                        @if (SignInManager.IsSignedIn(User)){
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                後台管理
+                            </a>
+                            <ul class="dropdown-menu">
+                                @* ========== 銷售與營運 (所有後台人員可見) ========== *@
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">儀表板</a></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Quotations" asp-action="Index">報價單管理</a></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Orders" asp-action="Index">訂單管理</a></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Members" asp-action="Index">客戶管理</a></li>
+
+                                @* ========== 核心系統管理 (僅限 Admin 可見) ========== *@
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">進階管理</h6></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="ProductDetails" asp-action="Index">庫存管理 (進貨)</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Products" asp-action="Index">產品主檔管理</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="Index">使用者管理</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Roles" asp-action="Index">角色管理</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Employees" asp-action="Index">員工管理</a></li>
+                                }
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

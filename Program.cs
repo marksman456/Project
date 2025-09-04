@@ -13,7 +13,7 @@ builder.Services.AddDbContext<XiangYunDbContext>(options =>
 builder.Services.AddDbContext<IdentityDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("XiangYunDbContextConnection")));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<IdentityDbContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>().AddEntityFrameworkStores<IdentityDbContext>();
 
 builder.Services.AddControllersWithViews();
 
@@ -45,7 +45,7 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "adminDefault",
     pattern: "admin",
-    defaults: new { area = "Admin", controller = "Members", action = "Index" }
+    defaults: new { area = "Admin", controller = "Dashboard", action = "Index" }
 );
 
 

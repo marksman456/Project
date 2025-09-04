@@ -5,20 +5,31 @@
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
 }
 
-<h3>@ViewData["Title"]</h3>
-
-<div class="row">
-    <div class="col-md-6">
-        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
-        <p>
-            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
-        </p>
-        <form id="download-data" asp-page="DownloadPersonalData" method="post">
-            <button class="btn btn-primary" type="submit">Download</button>
-        </form>
-        <p>
-            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">Delete</a>
-        </p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h3 class="card-title mb-4 text-center">
+                        <i class="bi bi-person-circle me-2"></i>@ViewData["Title"]
+                    </h3>
+                    <p class="mb-3 text-secondary">
+                        您的帳戶包含您提供給我們的個人資料。您可以在此頁面下載或刪除這些資料。
+                    </p>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>刪除這些資料將永久移除您的帳戶，且無法復原。</strong>
+                    </div>
+                    <form id="download-data" asp-page="DownloadPersonalData" method="post" class="mb-3">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="bi bi-download me-1"></i>下載個人資料
+                        </button>
+                    </form>
+                    <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger w-100">
+                        <i class="bi bi-trash me-1"></i>刪除帳戶
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

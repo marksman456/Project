@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Project.Models.Employee>
+
+@{
+    ViewData["Title"] = "員工管理";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">新增員工</a>
+</p>
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>員工姓名</th>
+            <th>職稱</th>
+            <th>到職日</th>
+            <th>關聯系統帳號</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.HireDate)</td>
+                <td>
+                    @* 如果 User 物件存在，則顯示 UserName *@
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.EmployeeID">編輯</a> |
+                    <a asp-action="Details" asp-route-id="@item.EmployeeID">詳細資料</a>
+                  
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

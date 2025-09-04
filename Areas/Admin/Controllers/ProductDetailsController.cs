@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ProductDetailsController : Controller
     {
         private readonly XiangYunDbContext _context;

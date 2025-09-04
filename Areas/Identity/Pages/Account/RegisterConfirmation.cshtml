@@ -1,23 +1,41 @@
 ﻿@page
+
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Register confirmation";
+    ViewData["Title"] = "註冊確認";
 }
 
-<h1>@ViewData["Title"]</h1>
-@{
-    if (@Model.DisplayConfirmAccountLink)
-    {
-<p>
-    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-    Normally this would be emailed: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
-</p>
-    }
-    else
-    {
-<p>
-        Please check your email to confirm your account.
-</p>
-    }
-}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    @if (Model.DisplayConfirmAccountLink)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            此應用程式目前尚未註冊真實的電子郵件發送服務，請參閱
+                            <a href="https://aka.ms/aspaccountconf" target="_blank" rel="noopener">這份文件</a>
+                            以瞭解如何設定真實的電子郵件發送服務。
+                        </div>
+                        <p>
+                            通常這個連結會透過電子郵件寄送給您：<br />
+                            <a id="confirm-link" class="btn btn-success mt-2" href="@Model.EmailConfirmationUrl">點此確認您的帳號</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            請檢查您的電子郵件以完成帳號確認。
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 

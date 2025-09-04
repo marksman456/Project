@@ -19,7 +19,7 @@ namespace Project.Areas.Admin.Controllers
 {
 
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ProductsController : Controller
     {
         private readonly XiangYunDbContext _context;
