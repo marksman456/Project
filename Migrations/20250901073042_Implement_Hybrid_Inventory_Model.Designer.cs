@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
+using ProjectData.Data;
 
-#nullable disable
 
 namespace Project.Migrations
 {

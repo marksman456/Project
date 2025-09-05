@@ -1,6 +1,6 @@
-﻿using Project.Models; // 請確認您的命名空間
+﻿using ProjectData.Models;
 
-namespace Project.Models.ViewModels
+namespace Project.ViewModels.Dashboard
 {
     public class DashboardViewModel
     {

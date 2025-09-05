@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Project.Data;
-using Project.Models;
+
+using ProjectData.Data;
+using ProjectData.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

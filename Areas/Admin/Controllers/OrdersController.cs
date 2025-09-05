@@ -1,24 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Project.Data; // 請替換為你的專案 Data 命名空間
-using Project.Models; // 請替換為你的專案 Models 命名空間
+using ProjectData.Data;
+using ProjectData.Models; 
 
-namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命名空間
-{
+namespace Project.Areas.Admin.Controllers { 
     [Area("Admin")]
     [Authorize]
     public class OrdersController : Controller
     {
-        private readonly XiangYunDbContext _context; // 請替換為你的 DbContext
+        private readonly XiangYunDbContext _context; 
 
-        public OrdersController(XiangYunDbContext context) // 請替換為你的 DbContext
+        public OrdersController(XiangYunDbContext context) 
         {
             _context = context;
         }
 
-        // POST: Admin/Orders/CreateFromQuotation
-        // POST: Admin/Orders/CreateFromQuotation
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFromQuotation(int quotationId, int paymethodId, int salesChannelId)
@@ -29,7 +27,7 @@ namespace Project.Areas.Admin.Controllers // 請替換為你的專案 Area 命�
                 var quotation = await _context.Quotation
                     .Include(q => q.QuotationDetail)
                         .ThenInclude(qd => qd.ProductDetail)
-                            .ThenInclude(pd => pd.Product) // 【重要】載入 Product 才能判斷類型
+                            .ThenInclude(pd => pd.Product)
                     .FirstOrDefaultAsync(q => q.QuotationID == quotationId);
 
                 if (quotation == null || quotation.Status != "報價中")

@@ -1,4 +1,4 @@
-﻿@model Project.Models.Quotation
+﻿@model Project.ViewModels.Quotation.QuotationViewModel
 
 @{
     ViewData["Title"] = "新增報價單";
@@ -19,14 +19,14 @@
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="MemberID" class="control-label"></label>
-                    <select asp-for="MemberID" class="form-select" asp-items="ViewBag.MemberName">
+                    <select asp-for="MemberID" class="form-select" asp-items="Model.MemberList">
                         <option value="">-- 請選擇客戶 --</option>
                     </select>
                     <span asp-validation-for="MemberID" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="EmployeeID" class="control-label"></label>
-                    <select asp-for="EmployeeID" class="form-select" asp-items="ViewBag.EmployeeName">
+                    <select asp-for="EmployeeID" class="form-select" asp-items="Model.EmployeeList">
                         <option value="">-- 請選擇負責員工 --</option>
                     </select>
                     <span asp-validation-for="EmployeeID" class="text-danger"></span>

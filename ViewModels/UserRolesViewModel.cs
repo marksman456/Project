@@ -1,5 +1,4 @@
-﻿
-namespace Project.Models.ViewModels 
+﻿namespace Project.ViewModels 
 {
     public class UserRolesViewModel
     {

@@ -1,18 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
-namespace Project.Models.ViewModels
+namespace Project.ViewModels.Quotation
 {
-    public class QuotationEditViewModel : IValidatableObject
+    public class QuotationViewModel : IValidatableObject
     {
+
         public int QuotationID { get; set; }
 
 
         [Required(ErrorMessage = "必填")]
         public string? QuotationNumber { get; set; }
 
+        [Display(Name = "客戶")]
+     
         [Required(ErrorMessage = "客戶為必填項")]
         public int MemberID { get; set; }
 
+        [Display(Name = "員工")]
         [Required(ErrorMessage = "員工為必填項")]
         public int EmployeeID { get; set; }
 
@@ -21,16 +26,21 @@ namespace Project.Models.ViewModels
 
 
 
+       
+        [Display(Name = "報價日期")]
         [Required(ErrorMessage = "報價日期為必填項")]
-
         public DateOnly QuoteDate { get; set; }
 
         // 有效期限本來就是可為空的，所以維持不變
+        [Display(Name = "有效期限")]
         public DateOnly? ValidityPeriod { get; set; }
-
+        [Display(Name = "狀態")]
         public string Status { get; set; } = null!;
         public string? Note { get; set; }
 
+
+        public IEnumerable<SelectListItem> MemberList { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> EmployeeList { get; set; } = new List<SelectListItem>();
         public List<QuotationDetailViewModel> QuotationDetail { get; set; } = new List<QuotationDetailViewModel>();
 
 
@@ -44,6 +54,10 @@ namespace Project.Models.ViewModels
                     "有效期限不能小於報價日期。",
                     new[] { nameof(ValidityPeriod) }
                 );
+            }
+            if (!QuotationDetail.Any())
+            {
+                yield return new ValidationResult("報價單至少需要一個品項。", new[] { nameof(QuotationDetail) });
             }
         }
 

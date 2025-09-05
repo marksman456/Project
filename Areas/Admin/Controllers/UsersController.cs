@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Project.Models.ViewModels; // <--【注意】請確認這是您 ViewModel 的正確命名空間
+using Project.ViewModels; // <--【注意】請確認這是您 ViewModel 的正確命名空間
 
 namespace Project.Areas.Admin.Controllers // 請確認您的命名空間
 {

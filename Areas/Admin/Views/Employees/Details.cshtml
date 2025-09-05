@@ -1,4 +1,4 @@
-﻿@model Project.Models.Employee
+﻿@model Project.ViewModels.Employee.EmployeeViewModel
 
 @{
     ViewData["Title"] = "員工詳細資料";
@@ -18,10 +18,10 @@
                     @Html.DisplayFor(model => model.EmployeeNumber)
                 </dd>
                 <dt class="col-sm-3 text-end fw-bold">
-                    @Html.DisplayNameFor(model => model.Name)
+                    @Html.DisplayNameFor(model => model.EmployeeName)
                 </dt>
                 <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Name)
+                    @Html.DisplayFor(model => model.EmployeeName)
                 </dd>
                 <dt class="col-sm-3 text-end fw-bold">
                     @Html.DisplayNameFor(model => model.Phone)
@@ -76,6 +76,12 @@
                 </dt>
                 <dd class="col-sm-9">
                     @Html.DisplayFor(model => model.Title)
+                </dd>
+                <dt class="col-sm-3 text-end fw-bold">
+                    @Html.DisplayNameFor(model => model.UserId)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.UserId)
                 </dd>
             </dl>
         </div>

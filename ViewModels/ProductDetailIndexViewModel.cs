@@ -1,4 +1,6 @@
-﻿namespace Project.Models.ViewModels
+﻿using ProjectData.Models;
+
+namespace Project.ViewModels
 {
     public class ProductDetailIndexViewModel
     {

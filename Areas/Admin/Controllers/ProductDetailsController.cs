@@ -2,13 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Project.Data;
-using Project.Models;
-using Project.Models.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ProjectData.Models;
+using Project.ViewModels;
+using ProjectData.Data;
 
 namespace Project.Areas.Admin.Controllers
 {
