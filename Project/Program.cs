@@ -23,6 +23,9 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
+builder.Services.AddScoped<IQuotationService, QuotationService>();
+
+
 
 
 builder.Services.AddControllersWithViews();

@@ -6,42 +6,46 @@ namespace Project.ViewModels.Quotation
     public class QuotationViewModel : IValidatableObject
     {
 
+       
         public int QuotationID { get; set; }
 
-
-        [Required(ErrorMessage = "必填")]
-        public string? QuotationNumber { get; set; }
-
+        [Display(Name = "報價單號")]
+        public string QuotationNumber { get; set; } = string.Empty;
         [Display(Name = "客戶")]
-     
         [Required(ErrorMessage = "客戶為必填項")]
         public int MemberID { get; set; }
-
         [Display(Name = "員工")]
         [Required(ErrorMessage = "員工為必填項")]
         public int EmployeeID { get; set; }
 
+        [Display(Name = "客戶")]
+        public string? MemberName { get; set; }
+
+        [Display(Name = "員工")]
+        public string? EmployeeName { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime? LastUpdate { get; set; }
 
-
-
-       
         [Display(Name = "報價日期")]
         [Required(ErrorMessage = "報價日期為必填項")]
         public DateOnly QuoteDate { get; set; }
 
-        // 有效期限本來就是可為空的，所以維持不變
         [Display(Name = "有效期限")]
         public DateOnly? ValidityPeriod { get; set; }
+
         [Display(Name = "狀態")]
         public string Status { get; set; } = null!;
-        public string? Note { get; set; }
+        public DateTime? LastUpdate { get; set; }
 
-
+        [Display(Name = "備註")]
+        public string? Note { get; set; } 
         public IEnumerable<SelectListItem> MemberList { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> EmployeeList { get; set; } = new List<SelectListItem>();
+
+        public IEnumerable<SelectListItem> PaymethodList { get; set; } = new List<SelectListItem>();
+
+        public IEnumerable<SelectListItem> SalesChannelList { get; set; } = new List<SelectListItem>();
         public List<QuotationDetailViewModel> QuotationDetail { get; set; } = new List<QuotationDetailViewModel>();
+        
 
 
 
@@ -76,6 +80,8 @@ namespace Project.ViewModels.Quotation
 
             [Range(0, 1, ErrorMessage = "折扣必須介於 0 和 1 之間")]
             public decimal? Discount { get; set; }
+
+            public string? ProductStatus { get; set; }
             public string? ProductNameAndSpec { get; set; }
         }
 

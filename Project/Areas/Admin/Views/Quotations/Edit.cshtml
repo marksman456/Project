@@ -24,11 +24,11 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label asp-for="MemberID" class="form-label fw-bold">客戶名稱</label>
-                        <select asp-for="MemberID" class="form-select" asp-items="ViewBag.MemberName"></select>
+                        <select asp-for="MemberID" class="form-select" asp-items="Model.MemberList"></select>
                     </div>
                     <div class="col-md-6">
                         <label asp-for="EmployeeID" class="form-label fw-bold">負責員工</label>
-                        <select asp-for="EmployeeID" class="form-select" asp-items="ViewBag.EmployeeName"></select>
+                        <select asp-for="EmployeeID" class="form-select" asp-items="Model.EmployeeList"></select>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="QuoteDate" class="form-label fw-bold">報價日期</label>

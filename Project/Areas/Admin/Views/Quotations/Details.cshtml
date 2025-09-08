@@ -1,4 +1,4 @@
-﻿@model ProjectData.Models.Quotation
+﻿@model Project.ViewModels.Quotation.QuotationViewModel
 
 
 @await Html.PartialAsync("_StatusMessage")
@@ -16,11 +16,11 @@
         @* --- 主檔資訊 --- *@
         <div class="card-body">
             <dl class="row">
-                <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.Member.Name)</dt>
-                <dd class="col-sm-4">@Model.Member.Name</dd>
+                <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.MemberName)</dt>
+                <dd class="col-sm-4">@Model.MemberName</dd>
 
-                <dt class="col-sm-2">   @Html.DisplayNameFor(model => model.Employee.Name)</dt>
-                <dd class="col-sm-4">@Model.Employee.Name</dd>
+                <dt class="col-sm-2">   @Html.DisplayNameFor(model => model.EmployeeName)</dt>
+                <dd class="col-sm-4">@Model.EmployeeName</dd>
 
                 <dt class="col-sm-2"> @Html.DisplayNameFor(model => model.QuoteDate)</dt>
                 <dd class="col-sm-4">@Model.QuoteDate.ToString("yyyy-MM-dd")</dd>
@@ -71,8 +71,8 @@
                         totalAmount += subtotal;
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.ProductDetail.Product.ProductName)
-                                (@Html.DisplayFor(modelItem => item.ProductDetail.Status))
+                                @Html.DisplayFor(modelItem => item.ProductNameAndSpec)
+                                (@Html.DisplayFor(modelItem => item.ProductStatus))
                             </td>
                             <td class="text-end">@item.Price.ToString("N2")</td>
                             <td class="text-center">@item.Quantity</td>
@@ -133,13 +133,13 @@
 
                             <div class="mb-3">
                                 <label for="paymethodId" class="form-label">付款方式</label>
-                                <select name="paymethodId" class="form-select" asp-items="ViewBag.Paymethods" required>
+                                <select name="paymethodId" class="form-select" asp-items="Model.PaymethodList" required>
                                     <option value="">-- 請選擇 --</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="salesChannelId" class="form-label">銷售管道</label>
-                                <select name="salesChannelId" class="form-select" asp-items="ViewBag.SalesChannels" required>
+                                        <select name="salesChannelId" class="form-select" asp-items="Model.SalesChannelList" required>
                                     <option value="">-- 請選擇 --</option>
                                 </select>
                             </div>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ProjectData.Models.Quotation>
+﻿@model IEnumerable<Project.ViewModels.Quotation.QuotationViewModel>
 
 @{
     ViewData["Title"] = "報價單列表";
@@ -17,11 +17,11 @@
             </th>
             <th>
                 @* 修改：顯示客戶姓名 *@
-                @Html.DisplayNameFor(model => model.Member.Name)
+                @Html.DisplayNameFor(model => model.MemberName)
             </th>
             <th>
                 @* 修改：顯示負責員工姓名 *@
-                @Html.DisplayNameFor(model => model.Employee.Name)
+                @Html.DisplayNameFor(model => model.EmployeeName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.QuoteDate)
@@ -42,11 +42,11 @@
                 </td>
                 <td>
                     @* 修改：顯示客戶姓名 *@
-                    @Html.DisplayFor(modelItem => item.Member.Name)
+                    @Html.DisplayFor(modelItem => item.MemberName)
                 </td>
                 <td>
                     @* 修改：顯示負責員工姓名 *@
-                    @Html.DisplayFor(modelItem => item.Employee.Name)
+                    @Html.DisplayFor(modelItem => item.EmployeeName)
                 </td>
                 <td>
                     @* 將日期格式化為 yyyy-MM-dd *@
@@ -60,9 +60,12 @@
             </td>
                 <td class="d-flex">
                     <a asp-action="Details" asp-route-id="@item.QuotationID" class="btn btn-sm btn-outline-info">詳細</a>
-                    <form asp-action="Delete" asp-route-id="@item.QuotationID">
-                        <input type="submit"  value="刪除" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除(@item.QuotationNumber)嗎?')"/>
-                    </form>
+                    @if (item.Status == "報價中")
+                    {
+                        <form asp-action="Void" asp-route-id="@item.QuotationID" method="post" class="d-inline" onsubmit="return confirm('您確定要作廢這張報價單嗎？');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">作廢</button>
+                        </form>
+                    }
                 </td>
             </tr>
         }

@@ -20,7 +20,7 @@ namespace Project.Areas.Admin.Controllers
 {
 
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly XiangYunDbContext _context;
@@ -53,7 +53,7 @@ namespace Project.Areas.Admin.Controllers
             return View(product);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             
@@ -95,7 +95,7 @@ namespace Project.Areas.Admin.Controllers
             return View(product);
         }
 
-       
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -161,7 +161,7 @@ namespace Project.Areas.Admin.Controllers
             return View(product);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -200,6 +200,7 @@ namespace Project.Areas.Admin.Controllers
 
         // GET: Admin/Products/GetProductInfo/5
         [HttpGet]
+        [Authorize(Roles = "Salesperson")]
         public async Task<IActionResult> GetProductInfo(int id)
         {
             var product = await _context.Product.FindAsync(id);
@@ -211,6 +212,7 @@ namespace Project.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Salesperson")]
         public async Task<IActionResult> SearchProducts(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))
@@ -242,6 +244,7 @@ namespace Project.Areas.Admin.Controllers
 
             return Json(products);
         }
+       
         private bool ProductExists(int id)
         {
             return _context.Product.Any(e => e.ProductID == id);
