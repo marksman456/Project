@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project.ViewModels.Quotation.QuotationViewModel>
+﻿@model IEnumerable<Project.ViewModels.VMQuotation.QuotationViewModel>
 
 @{
     ViewData["Title"] = "報價單列表";
@@ -16,11 +16,11 @@
                 @Html.DisplayNameFor(model => model.QuotationNumber)
             </th>
             <th>
-                @* 修改：顯示客戶姓名 *@
+                @* 顯示客戶姓名 *@
                 @Html.DisplayNameFor(model => model.MemberName)
             </th>
             <th>
-                @* 修改：顯示負責員工姓名 *@
+                @* 顯示負責員工姓名 *@
                 @Html.DisplayNameFor(model => model.EmployeeName)
             </th>
             <th>
@@ -41,11 +41,11 @@
                     @Html.DisplayFor(modelItem => item.QuotationNumber)
                 </td>
                 <td>
-                    @* 修改：顯示客戶姓名 *@
+                    @* 顯示客戶姓名 *@
                     @Html.DisplayFor(modelItem => item.MemberName)
                 </td>
                 <td>
-                    @* 修改：顯示負責員工姓名 *@
+                    @*顯示負責員工姓名 *@
                     @Html.DisplayFor(modelItem => item.EmployeeName)
                 </td>
                 <td>

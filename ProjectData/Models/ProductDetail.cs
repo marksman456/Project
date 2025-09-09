@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProjectData.Models;
 
@@ -12,6 +13,8 @@ public partial class ProductDetail
     public string? SerialNumber { get; set; } = null!;
 
     public DateOnly? PurchaseDate { get; set; }
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal PurchaseCost { get; set; }
 
     public string Status { get; set; } = null!;
 

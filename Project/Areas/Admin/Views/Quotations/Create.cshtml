@@ -1,4 +1,4 @@
-﻿@model Project.ViewModels.Quotation.QuotationViewModel
+﻿@model Project.ViewModels.VMQuotation.QuotationViewModel
 
 @{
     ViewData["Title"] = "新增報價單";
@@ -10,7 +10,7 @@
 <form asp-action="Create">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    @* --- 1. 報價單主檔資訊 --- *@
+    @*  報價單主檔資訊 *@
     <div class="card shadow-sm mb-4">
         <div class="card-header">
             報價單主檔
@@ -107,11 +107,11 @@
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
-    @* 【新增】: 商品搜尋 Autocomplete 的 jQuery 腳本 *@
+    @* 商品搜尋 Autocomplete 的 jQuery 腳本 *@
     <script>
         $(document).ready(function () {
 
-                  // --- 【新增】: 日期驗證邏輯 ---
+                  // 日期驗證邏輯
             const quoteDateInput = $('#QuoteDate');
             const validityPeriodInput = $('#ValidityPeriod');
 
@@ -132,8 +132,7 @@
             // 為兩個日期輸入框都綁定 change 事件
             quoteDateInput.on('change', validateDates);
             validityPeriodInput.on('change', validateDates);
-            // --- 【新增結束】 ---
-
+         
 
 
 
@@ -159,11 +158,12 @@
                 minLength: 2, // 使用者至少輸入2個字元才觸發搜尋
                 select: function (event, ui) {
                     // 當使用者從下拉選單中選擇一項時觸發
+
                     console.log("已選擇: ", ui.item); // 在瀏覽器主控台印出資訊，方便除錯
+
                     selectedProduct = ui.item; // 將選擇的商品物件存起來
                     
-                    // 我們可以順便將價格顯示在旁邊的欄位，但這是下一步的功能
-                    // $("#productPrice").val(ui.item.price);
+                    
 
                // 阻止預設行為，但語意更清晰 (手動控制覆蓋預設行為內容)
                          $("#productSearch").val(ui.item.label);
@@ -178,7 +178,6 @@
                 }
             });
 
-            // (下一步我們會在這裡寫 #addProductBtn 的 click 事件)
               // 【新增】: 點擊 "加入品項" 按鈕的事件
             $('#addProductBtn').on('click', function() {
 
@@ -233,21 +232,21 @@
                 selectedProduct = null;
                 $('#productSearch').val('').focus(); // 清空搜尋框並讓它取得焦點
 
-                 calculateTotals(); // 【新增】加入後，立刻計算一次總價
+                 calculateTotals(); // 加入後，立刻計算一次總價
 
            
             });
 
-               // (下一步我們會在這裡加入計算總價的函式)
+             
 
-              // 【新增】: 1. 移除品項功能 (使用事件委派)
+              //  1. 移除品項功能 (使用事件委派)
              $('#quotationDetailsTableBody').on('click', '.remove-item-btn', function() {
                 $(this).closest('tr').remove();
                 calculateTotals(); // 移除後，也要重新計算總價
                 reindexTableRows(); // 移除後，重新編排索引
             });
 
-            // 【新增】: 2. 即時計算金額功能 (使用事件委派)
+            //  2. 即時計算金額功能 (使用事件委派)
            $('#quotationDetailsTableBody').on('input', '.price-input, .quantity-input, .discount-input', function() {
                 const row = $(this).closest('tr');
                 const price = parseFloat(row.find('.price-input').val()) || 0;
@@ -258,7 +257,7 @@
                 calculateTotals(); // 任何變動都重新計算總價
             });
 
-            // 【新增】: 3. 計算總金額的共用函式
+            //  3. 計算總金額的共用函式
               function calculateTotals() {
                 let grandTotal = 0;
                $('#quotationDetailsTableBody').find('tr').each(function() {
@@ -267,7 +266,7 @@
                 });
                 $('#grandTotal').text(grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
-                   // 【新功能 4】: 重新編排索引的函式
+                   //  重新編排索引的函式
             function reindexTableRows() {
                $('#quotationDetailsTableBody').find('tr').each(function(newIndex) {
                     // 找到此列中所有的 input 和 select 元素

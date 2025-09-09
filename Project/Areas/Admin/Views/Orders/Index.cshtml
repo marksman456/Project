@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ProjectData.Models.Order>
+﻿@model IEnumerable<Project.ViewModels.VMOrder.OrderIndexViewModel>
 
 @{
     ViewData["Title"] = "訂單管理";
@@ -24,8 +24,8 @@
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.OrderNumber)</td>
-                <td>@Html.DisplayFor(modelItem => item.Member.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Employee.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.MemberName)</td>
+                <td>@Html.DisplayFor(modelItem => item.EmployeeName)</td>
                 <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
                 <td class="text-end">@item.TotalAmount.ToString("N0")</td>
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>

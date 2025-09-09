@@ -6,7 +6,8 @@
             <th>產品系列</th>
             <th>產品序號</th>
             <th>狀態</th>
-            <th class="text-end">採購成本</th>
+            <th >進貨成本</th>
+            <th class="text-end">預計售價</th>
             <th>進貨日期</th>
             <th></th>
         </tr>
@@ -28,12 +29,10 @@
                         <span class="badge bg-secondary">@item.Status</span>
                     }
                 </td>
+                <td >@item.PurchaseCost.ToString("N0")</td>
                 <td class="text-end">@item.Price.ToString("N0")</td>
                 <td>@item.PurchaseDate?.ToString("yyyy-MM-dd")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductDetailID">編輯</a> |
-                    <a asp-action="Details" asp-route-id="@item.ProductDetailID">詳細資料</a>
-                </td>
+               
             </tr>
         }
     </tbody>

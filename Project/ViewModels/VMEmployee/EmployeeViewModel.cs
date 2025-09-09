@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Project.ViewModels.Employee
+namespace Project.ViewModels.VMEmployee
 {
     public class EmployeeViewModel
     {

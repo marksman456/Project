@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Services.Interfaces;
 using Project.ViewModels;
-using Project.ViewModels.Quotation;
+using Project.ViewModels.VMQuotation;
 using ProjectData.Data;
 using ProjectData.Models;
-using static Project.ViewModels.Quotation.QuotationViewModel;
+using static Project.ViewModels.VMQuotation.QuotationViewModel;
 
 namespace Project.Areas.Admin.Controllers
 {

@@ -28,12 +28,9 @@
                         <span class="badge bg-secondary">@item.Status</span>
                     }
                 </td>
-                <td class="text-end">@item.Price.ToString("N0")</td>
+                <td class="text-end">@item.PurchaseCost.ToString("N0")</td>
                 <td>@item.PurchaseDate?.ToString("yyyy-MM-dd")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductDetailID">編輯</a> |
-                    <a asp-action="Details" asp-route-id="@item.ProductDetailID">詳細資料</a>
-                </td>
+               
             </tr>
         }
     </tbody>

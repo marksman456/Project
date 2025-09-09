@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Project.ViewModels; // <--【注意】請確認這是您 ViewModel 的正確命名空間
+using Project.ViewModels;
 
-namespace Project.Areas.Admin.Controllers // 請確認您的命名空間
+namespace Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]// 未來可以改成 [Authorize(Roles = "Admin")] 來限制只有管理員能訪問
+    [Authorize(Roles = "Admin")]//  [Authorize(Roles = "Admin")] 來限制只有管理員能訪問
     public class UsersController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;

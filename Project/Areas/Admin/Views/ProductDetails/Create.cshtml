@@ -1,4 +1,4 @@
-﻿@model ProjectData.Models.ProductDetail
+﻿@model Project.ViewModels.VMProductDetail.ProductDetailCreateViewModel
 
 @{
     ViewData["Title"] = "進貨登錄";
@@ -14,7 +14,7 @@
 
             <div class="mb-3">
                 <label asp-for="ProductID" class="control-label">產品系列</label>
-                <select id="productSelector" asp-for="ProductID" class="form-select" asp-items="ViewBag.Products">
+                <select id="productSelector" asp-for="ProductID" class="form-select" asp-items="Model.ProductList">
                     <option value="">-- 請選擇一個產品系列 --</option>
                 </select>
                 <span asp-validation-for="ProductID" class="text-danger"></span>
@@ -39,10 +39,18 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="Price" class="control-label">採購單價 (成本)</label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <label asp-for="PurchaseCost" class="control-label"></label>
+                <input asp-for="PurchaseCost" class="form-control" />
+                <span asp-validation-for="PurchaseCost" class="text-danger"></span>
             </div>
+
+            <div class="mb-3">
+                <label asp-for="SalePrice" class="control-label"></label>
+                <input asp-for="SalePrice" class="form-control" />
+                <span asp-validation-for="SalePrice" class="text-danger"></span>
+            </div>
+
+           
 
             <div class="form-group mt-4">
                 <input type="submit" value="新增庫存" class="btn btn-primary" />

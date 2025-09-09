@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Services.Interfaces;
 using Project.ViewModels;
-using Project.ViewModels.Employee;
+using Project.ViewModels.VMEmployee;
 using ProjectData.Data;
 using ProjectData.Models;
 

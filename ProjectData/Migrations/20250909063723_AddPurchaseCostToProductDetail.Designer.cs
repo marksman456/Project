@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Project.Data;
 using ProjectData.Data;
 
 #nullable disable
@@ -13,8 +12,8 @@ using ProjectData.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(XiangYunDbContext))]
-    [Migration("20250822075236_InitialSchema")]
-    partial class InitialSchema
+    [Migration("20250909063723_AddPurchaseCostToProductDetail")]
+    partial class AddPurchaseCostToProductDetail
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +41,100 @@ namespace Project.Migrations
                     b.ToTable("EmployeeRole");
                 });
 
-            modelBuilder.Entity("Project.Models.Account", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AspNetRoles", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AspNetUsers", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.ToTable("AspNetUserRoles", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("ProjectData.Models.Account", b =>
                 {
                     b.Property<string>("Username")
                         .HasMaxLength(50)
@@ -66,7 +158,7 @@ namespace Project.Migrations
                     b.ToTable("Account");
                 });
 
-            modelBuilder.Entity("Project.Models.Category", b =>
+            modelBuilder.Entity("ProjectData.Models.Category", b =>
                 {
                     b.Property<int>("CategoryID")
                         .ValueGeneratedOnAdd()
@@ -106,7 +198,7 @@ namespace Project.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("Project.Models.Employee", b =>
+            modelBuilder.Entity("ProjectData.Models.Employee", b =>
                 {
                     b.Property<int>("EmployeeID")
                         .ValueGeneratedOnAdd()
@@ -156,8 +248,16 @@ namespace Project.Migrations
                     b.Property<bool>("Resignation")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("EmployeeID")
                         .HasName("PK__Employee__7AD04FF1A6BDA2BB");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex(new[] { "EmployeeNumber" }, "UQ__Employee__8D663598BAB6580E")
                         .IsUnique();
@@ -165,7 +265,7 @@ namespace Project.Migrations
                     b.ToTable("Employee");
                 });
 
-            modelBuilder.Entity("Project.Models.InventoryMovement", b =>
+            modelBuilder.Entity("ProjectData.Models.InventoryMovement", b =>
                 {
                     b.Property<int>("MovementID")
                         .ValueGeneratedOnAdd()
@@ -193,15 +293,20 @@ namespace Project.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RelatedOrderID")
+                        .HasColumnType("int");
+
                     b.HasKey("MovementID")
                         .HasName("PK__Inventor__D1822466A7B0C9ED");
 
                     b.HasIndex("ProductDetailID");
 
+                    b.HasIndex("RelatedOrderID");
+
                     b.ToTable("InventoryMovement");
                 });
 
-            modelBuilder.Entity("Project.Models.Member", b =>
+            modelBuilder.Entity("ProjectData.Models.Member", b =>
                 {
                     b.Property<int>("MemberID")
                         .ValueGeneratedOnAdd()
@@ -258,7 +363,7 @@ namespace Project.Migrations
                     b.ToTable("Member");
                 });
 
-            modelBuilder.Entity("Project.Models.ModelSpec", b =>
+            modelBuilder.Entity("ProjectData.Models.ModelSpec", b =>
                 {
                     b.Property<int>("ModelSpecID")
                         .ValueGeneratedOnAdd()
@@ -287,7 +392,7 @@ namespace Project.Migrations
                     b.ToTable("ModelSpec");
                 });
 
-            modelBuilder.Entity("Project.Models.Order", b =>
+            modelBuilder.Entity("ProjectData.Models.Order", b =>
                 {
                     b.Property<int>("OrderID")
                         .ValueGeneratedOnAdd()
@@ -310,6 +415,9 @@ namespace Project.Migrations
                     b.Property<int>("MemberID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("OrderDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -326,6 +434,14 @@ namespace Project.Migrations
 
                     b.Property<int>("SalesChannelID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("OrderID")
                         .HasName("PK__Order__C3905BAF9F5E47D5");
@@ -344,7 +460,7 @@ namespace Project.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("Project.Models.OrderDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.OrderDetail", b =>
                 {
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
@@ -352,7 +468,7 @@ namespace Project.Migrations
                     b.Property<int>("ProductDetailID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Discount")
+                    b.Property<decimal?>("Discount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(5, 2)")
                         .HasDefaultValue(1.00m);
@@ -371,7 +487,7 @@ namespace Project.Migrations
                     b.ToTable("OrderDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.Paymethod", b =>
+            modelBuilder.Entity("ProjectData.Models.Paymethod", b =>
                 {
                     b.Property<int>("PaymethodID")
                         .ValueGeneratedOnAdd()
@@ -390,7 +506,7 @@ namespace Project.Migrations
                     b.ToTable("Paymethod");
                 });
 
-            modelBuilder.Entity("Project.Models.Product", b =>
+            modelBuilder.Entity("ProjectData.Models.Product", b =>
                 {
                     b.Property<int>("ProductID")
                         .ValueGeneratedOnAdd()
@@ -401,6 +517,9 @@ namespace Project.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsSerialized")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(12, 2)");
@@ -434,7 +553,7 @@ namespace Project.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("Project.Models.ProductDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.ProductDetail", b =>
                 {
                     b.Property<int>("ProductDetailID")
                         .ValueGeneratedOnAdd()
@@ -442,14 +561,23 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductDetailID"));
 
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("PurchaseCost")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateOnly?>("PurchaseDate")
                         .HasColumnType("date");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.Property<string>("SerialNumber")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -464,12 +592,13 @@ namespace Project.Migrations
                     b.HasIndex("ProductID");
 
                     b.HasIndex(new[] { "SerialNumber" }, "UQ__ProductD__048A0008FA6EEC8F")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[SerialNumber] IS NOT NULL");
 
                     b.ToTable("ProductDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.ProductModel", b =>
+            modelBuilder.Entity("ProjectData.Models.ProductModel", b =>
                 {
                     b.Property<int>("ProductModelID")
                         .ValueGeneratedOnAdd()
@@ -497,7 +626,7 @@ namespace Project.Migrations
                     b.ToTable("ProductModel");
                 });
 
-            modelBuilder.Entity("Project.Models.PurchaseDetails", b =>
+            modelBuilder.Entity("ProjectData.Models.PurchaseDetails", b =>
                 {
                     b.Property<int>("PurchaseOrderID")
                         .HasColumnType("int");
@@ -519,7 +648,7 @@ namespace Project.Migrations
                     b.ToTable("PurchaseDetails");
                 });
 
-            modelBuilder.Entity("Project.Models.PurchaseOrder", b =>
+            modelBuilder.Entity("ProjectData.Models.PurchaseOrder", b =>
                 {
                     b.Property<int>("PurchaseOrderID")
                         .ValueGeneratedOnAdd()
@@ -564,7 +693,7 @@ namespace Project.Migrations
                     b.ToTable("PurchaseOrder");
                 });
 
-            modelBuilder.Entity("Project.Models.Quotation", b =>
+            modelBuilder.Entity("ProjectData.Models.Quotation", b =>
                 {
                     b.Property<int>("QuotationID")
                         .ValueGeneratedOnAdd()
@@ -623,13 +752,17 @@ namespace Project.Migrations
                     b.ToTable("Quotation");
                 });
 
-            modelBuilder.Entity("Project.Models.QuotationDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.QuotationDetail", b =>
                 {
                     b.Property<int>("QuotationID")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductDetailID")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("Discount")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(12, 2)");
@@ -645,7 +778,7 @@ namespace Project.Migrations
                     b.ToTable("QuotationDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.Role", b =>
+            modelBuilder.Entity("ProjectData.Models.Role", b =>
                 {
                     b.Property<int>("RoleID")
                         .ValueGeneratedOnAdd()
@@ -667,7 +800,7 @@ namespace Project.Migrations
                     b.ToTable("Role");
                 });
 
-            modelBuilder.Entity("Project.Models.SalesChannel", b =>
+            modelBuilder.Entity("ProjectData.Models.SalesChannel", b =>
                 {
                     b.Property<int>("SalesChannelID")
                         .ValueGeneratedOnAdd()
@@ -690,7 +823,7 @@ namespace Project.Migrations
                     b.ToTable("SalesChannel");
                 });
 
-            modelBuilder.Entity("Project.Models.ShippingDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.ShippingDetail", b =>
                 {
                     b.Property<int>("ShippingOrderID")
                         .HasColumnType("int");
@@ -712,7 +845,7 @@ namespace Project.Migrations
                     b.ToTable("ShippingDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.ShippingOrder", b =>
+            modelBuilder.Entity("ProjectData.Models.ShippingOrder", b =>
                 {
                     b.Property<int>("ShippingOrderID")
                         .ValueGeneratedOnAdd()
@@ -750,7 +883,7 @@ namespace Project.Migrations
                     b.ToTable("ShippingOrder");
                 });
 
-            modelBuilder.Entity("Project.Models.Supplier", b =>
+            modelBuilder.Entity("ProjectData.Models.Supplier", b =>
                 {
                     b.Property<int>("SupplierID")
                         .ValueGeneratedOnAdd()
@@ -783,22 +916,22 @@ namespace Project.Migrations
 
             modelBuilder.Entity("EmployeeRole", b =>
                 {
-                    b.HasOne("Project.Models.Employee", null)
+                    b.HasOne("ProjectData.Models.Employee", null)
                         .WithMany()
                         .HasForeignKey("EmployeeID")
                         .IsRequired()
                         .HasConstraintName("FK__EmployeeR__Emplo__46E78A0C");
 
-                    b.HasOne("Project.Models.Role", null)
+                    b.HasOne("ProjectData.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleID")
                         .IsRequired()
                         .HasConstraintName("FK__EmployeeR__RoleI__47DBAE45");
                 });
 
-            modelBuilder.Entity("Project.Models.Account", b =>
+            modelBuilder.Entity("ProjectData.Models.Account", b =>
                 {
-                    b.HasOne("Project.Models.Member", "Member")
+                    b.HasOne("ProjectData.Models.Member", "Member")
                         .WithMany("Account")
                         .HasForeignKey("MemberID")
                         .IsRequired()
@@ -807,20 +940,35 @@ namespace Project.Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("Project.Models.InventoryMovement", b =>
+            modelBuilder.Entity("ProjectData.Models.Employee", b =>
                 {
-                    b.HasOne("Project.Models.ProductDetail", "ProductDetail")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ProjectData.Models.InventoryMovement", b =>
+                {
+                    b.HasOne("ProjectData.Models.ProductDetail", "ProductDetail")
                         .WithMany("InventoryMovement")
                         .HasForeignKey("ProductDetailID")
                         .IsRequired()
                         .HasConstraintName("FK__Inventory__Produ__60A75C0F");
 
+                    b.HasOne("ProjectData.Models.Order", "RelatedOrder")
+                        .WithMany()
+                        .HasForeignKey("RelatedOrderID");
+
                     b.Navigation("ProductDetail");
+
+                    b.Navigation("RelatedOrder");
                 });
 
-            modelBuilder.Entity("Project.Models.ModelSpec", b =>
+            modelBuilder.Entity("ProjectData.Models.ModelSpec", b =>
                 {
-                    b.HasOne("Project.Models.ProductModel", "ProductModel")
+                    b.HasOne("ProjectData.Models.ProductModel", "ProductModel")
                         .WithMany("ModelSpec")
                         .HasForeignKey("ProductModelID")
                         .IsRequired()
@@ -829,27 +977,27 @@ namespace Project.Migrations
                     b.Navigation("ProductModel");
                 });
 
-            modelBuilder.Entity("Project.Models.Order", b =>
+            modelBuilder.Entity("ProjectData.Models.Order", b =>
                 {
-                    b.HasOne("Project.Models.Employee", "Employee")
+                    b.HasOne("ProjectData.Models.Employee", "Employee")
                         .WithMany("Order")
                         .HasForeignKey("EmployeeID")
                         .IsRequired()
                         .HasConstraintName("FK__Order__EmployeeI__06CD04F7");
 
-                    b.HasOne("Project.Models.Member", "Member")
+                    b.HasOne("ProjectData.Models.Member", "Member")
                         .WithMany("Order")
                         .HasForeignKey("MemberID")
                         .IsRequired()
                         .HasConstraintName("FK__Order__MemberID__05D8E0BE");
 
-                    b.HasOne("Project.Models.Paymethod", "Paymethod")
+                    b.HasOne("ProjectData.Models.Paymethod", "Paymethod")
                         .WithMany("Order")
                         .HasForeignKey("PaymethodID")
                         .IsRequired()
                         .HasConstraintName("FK__Order__Paymethod__07C12930");
 
-                    b.HasOne("Project.Models.SalesChannel", "SalesChannel")
+                    b.HasOne("ProjectData.Models.SalesChannel", "SalesChannel")
                         .WithMany("Order")
                         .HasForeignKey("SalesChannelID")
                         .IsRequired()
@@ -864,15 +1012,15 @@ namespace Project.Migrations
                     b.Navigation("SalesChannel");
                 });
 
-            modelBuilder.Entity("Project.Models.OrderDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.OrderDetail", b =>
                 {
-                    b.HasOne("Project.Models.Order", "Order")
+                    b.HasOne("ProjectData.Models.Order", "Order")
                         .WithMany("OrderDetail")
                         .HasForeignKey("OrderID")
                         .IsRequired()
                         .HasConstraintName("FK__OrderDeta__Order__0F624AF8");
 
-                    b.HasOne("Project.Models.ProductDetail", "ProductDetail")
+                    b.HasOne("ProjectData.Models.ProductDetail", "ProductDetail")
                         .WithMany("OrderDetail")
                         .HasForeignKey("ProductDetailID")
                         .IsRequired()
@@ -883,9 +1031,9 @@ namespace Project.Migrations
                     b.Navigation("ProductDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.Product", b =>
+            modelBuilder.Entity("ProjectData.Models.Product", b =>
                 {
-                    b.HasOne("Project.Models.ProductModel", "ProductModel")
+                    b.HasOne("ProjectData.Models.ProductModel", "ProductModel")
                         .WithMany("Product")
                         .HasForeignKey("ProductModelID")
                         .IsRequired()
@@ -894,9 +1042,9 @@ namespace Project.Migrations
                     b.Navigation("ProductModel");
                 });
 
-            modelBuilder.Entity("Project.Models.ProductDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.ProductDetail", b =>
                 {
-                    b.HasOne("Project.Models.Product", "Product")
+                    b.HasOne("ProjectData.Models.Product", "Product")
                         .WithMany("ProductDetail")
                         .HasForeignKey("ProductID")
                         .IsRequired()
@@ -905,9 +1053,9 @@ namespace Project.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Project.Models.ProductModel", b =>
+            modelBuilder.Entity("ProjectData.Models.ProductModel", b =>
                 {
-                    b.HasOne("Project.Models.Category", "Category")
+                    b.HasOne("ProjectData.Models.Category", "Category")
                         .WithMany("ProductModel")
                         .HasForeignKey("CategoryID")
                         .IsRequired()
@@ -916,15 +1064,15 @@ namespace Project.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Project.Models.PurchaseDetails", b =>
+            modelBuilder.Entity("ProjectData.Models.PurchaseDetails", b =>
                 {
-                    b.HasOne("Project.Models.ProductDetail", "ProductDetail")
+                    b.HasOne("ProjectData.Models.ProductDetail", "ProductDetail")
                         .WithMany("PurchaseDetails")
                         .HasForeignKey("ProductDetailID")
                         .IsRequired()
                         .HasConstraintName("FK__PurchaseD__Produ__6EF57B66");
 
-                    b.HasOne("Project.Models.PurchaseOrder", "PurchaseOrder")
+                    b.HasOne("ProjectData.Models.PurchaseOrder", "PurchaseOrder")
                         .WithMany("PurchaseDetails")
                         .HasForeignKey("PurchaseOrderID")
                         .IsRequired()
@@ -935,9 +1083,9 @@ namespace Project.Migrations
                     b.Navigation("PurchaseOrder");
                 });
 
-            modelBuilder.Entity("Project.Models.PurchaseOrder", b =>
+            modelBuilder.Entity("ProjectData.Models.PurchaseOrder", b =>
                 {
-                    b.HasOne("Project.Models.Supplier", "Supplier")
+                    b.HasOne("ProjectData.Models.Supplier", "Supplier")
                         .WithMany("PurchaseOrder")
                         .HasForeignKey("SupplierID")
                         .IsRequired()
@@ -946,15 +1094,15 @@ namespace Project.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("Project.Models.Quotation", b =>
+            modelBuilder.Entity("ProjectData.Models.Quotation", b =>
                 {
-                    b.HasOne("Project.Models.Employee", "Employee")
+                    b.HasOne("ProjectData.Models.Employee", "Employee")
                         .WithMany("Quotation")
                         .HasForeignKey("EmployeeID")
                         .IsRequired()
                         .HasConstraintName("FK__Quotation__Emplo__76969D2E");
 
-                    b.HasOne("Project.Models.Member", "Member")
+                    b.HasOne("ProjectData.Models.Member", "Member")
                         .WithMany("Quotation")
                         .HasForeignKey("MemberID")
                         .IsRequired()
@@ -965,15 +1113,15 @@ namespace Project.Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("Project.Models.QuotationDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.QuotationDetail", b =>
                 {
-                    b.HasOne("Project.Models.ProductDetail", "ProductDetail")
+                    b.HasOne("ProjectData.Models.ProductDetail", "ProductDetail")
                         .WithMany("QuotationDetail")
                         .HasForeignKey("ProductDetailID")
                         .IsRequired()
                         .HasConstraintName("FK__Quotation__Produ__7C4F7684");
 
-                    b.HasOne("Project.Models.Quotation", "Quotation")
+                    b.HasOne("ProjectData.Models.Quotation", "Quotation")
                         .WithMany("QuotationDetail")
                         .HasForeignKey("QuotationID")
                         .IsRequired()
@@ -984,15 +1132,15 @@ namespace Project.Migrations
                     b.Navigation("Quotation");
                 });
 
-            modelBuilder.Entity("Project.Models.ShippingDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.ShippingDetail", b =>
                 {
-                    b.HasOne("Project.Models.ProductDetail", "ProductDetail")
+                    b.HasOne("ProjectData.Models.ProductDetail", "ProductDetail")
                         .WithMany("ShippingDetail")
                         .HasForeignKey("ProductDetailID")
                         .IsRequired()
                         .HasConstraintName("FK__ShippingD__Produ__1BC821DD");
 
-                    b.HasOne("Project.Models.ShippingOrder", "ShippingOrder")
+                    b.HasOne("ProjectData.Models.ShippingOrder", "ShippingOrder")
                         .WithMany("ShippingDetail")
                         .HasForeignKey("ShippingOrderID")
                         .IsRequired()
@@ -1003,15 +1151,15 @@ namespace Project.Migrations
                     b.Navigation("ShippingOrder");
                 });
 
-            modelBuilder.Entity("Project.Models.ShippingOrder", b =>
+            modelBuilder.Entity("ProjectData.Models.ShippingOrder", b =>
                 {
-                    b.HasOne("Project.Models.Employee", "Employee")
+                    b.HasOne("ProjectData.Models.Employee", "Employee")
                         .WithMany("ShippingOrder")
                         .HasForeignKey("EmployeeID")
                         .IsRequired()
                         .HasConstraintName("FK__ShippingO__Emplo__160F4887");
 
-                    b.HasOne("Project.Models.Order", "Order")
+                    b.HasOne("ProjectData.Models.Order", "Order")
                         .WithMany("ShippingOrder")
                         .HasForeignKey("OrderID")
                         .IsRequired()
@@ -1022,12 +1170,12 @@ namespace Project.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Project.Models.Category", b =>
+            modelBuilder.Entity("ProjectData.Models.Category", b =>
                 {
                     b.Navigation("ProductModel");
                 });
 
-            modelBuilder.Entity("Project.Models.Employee", b =>
+            modelBuilder.Entity("ProjectData.Models.Employee", b =>
                 {
                     b.Navigation("Order");
 
@@ -1036,7 +1184,7 @@ namespace Project.Migrations
                     b.Navigation("ShippingOrder");
                 });
 
-            modelBuilder.Entity("Project.Models.Member", b =>
+            modelBuilder.Entity("ProjectData.Models.Member", b =>
                 {
                     b.Navigation("Account");
 
@@ -1045,24 +1193,24 @@ namespace Project.Migrations
                     b.Navigation("Quotation");
                 });
 
-            modelBuilder.Entity("Project.Models.Order", b =>
+            modelBuilder.Entity("ProjectData.Models.Order", b =>
                 {
                     b.Navigation("OrderDetail");
 
                     b.Navigation("ShippingOrder");
                 });
 
-            modelBuilder.Entity("Project.Models.Paymethod", b =>
+            modelBuilder.Entity("ProjectData.Models.Paymethod", b =>
                 {
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Project.Models.Product", b =>
+            modelBuilder.Entity("ProjectData.Models.Product", b =>
                 {
                     b.Navigation("ProductDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.ProductDetail", b =>
+            modelBuilder.Entity("ProjectData.Models.ProductDetail", b =>
                 {
                     b.Navigation("InventoryMovement");
 
@@ -1075,34 +1223,34 @@ namespace Project.Migrations
                     b.Navigation("ShippingDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.ProductModel", b =>
+            modelBuilder.Entity("ProjectData.Models.ProductModel", b =>
                 {
                     b.Navigation("ModelSpec");
 
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Project.Models.PurchaseOrder", b =>
+            modelBuilder.Entity("ProjectData.Models.PurchaseOrder", b =>
                 {
                     b.Navigation("PurchaseDetails");
                 });
 
-            modelBuilder.Entity("Project.Models.Quotation", b =>
+            modelBuilder.Entity("ProjectData.Models.Quotation", b =>
                 {
                     b.Navigation("QuotationDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.SalesChannel", b =>
+            modelBuilder.Entity("ProjectData.Models.SalesChannel", b =>
                 {
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Project.Models.ShippingOrder", b =>
+            modelBuilder.Entity("ProjectData.Models.ShippingOrder", b =>
                 {
                     b.Navigation("ShippingDetail");
                 });
 
-            modelBuilder.Entity("Project.Models.Supplier", b =>
+            modelBuilder.Entity("ProjectData.Models.Supplier", b =>
                 {
                     b.Navigation("PurchaseOrder");
                 });

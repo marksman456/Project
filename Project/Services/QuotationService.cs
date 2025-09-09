@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectData.Models;
 using Project.Services.Interfaces;
-using Project.ViewModels.Quotation;
+using Project.ViewModels.VMQuotation;
 using ProjectData.Data;
-using static Project.ViewModels.Quotation.QuotationViewModel;
+using static Project.ViewModels.VMQuotation.QuotationViewModel;
 
 namespace Project.Services
 {
@@ -23,6 +23,7 @@ namespace Project.Services
                 .Include(q => q.Employee)
                 .Include(q => q.Member)
                 .Include(q => q.QuotationDetail)
+                .Where(q => q.Status == "報價中")
                 .OrderByDescending(q => q.CreatedDate)
                 .ToListAsync();
 

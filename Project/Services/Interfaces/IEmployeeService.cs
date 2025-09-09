@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using ProjectData.Models;
-using Project.ViewModels.Employee;
+using Project.ViewModels.VMEmployee;
 
 namespace Project.Services.Interfaces // 請確認您的命名空間
 {

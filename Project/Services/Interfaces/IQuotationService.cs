@@ -1,4 +1,4 @@
-﻿using Project.ViewModels.Quotation;
+﻿using Project.ViewModels.VMQuotation;
 using ProjectData.Models;
 
 namespace Project.Services.Interfaces

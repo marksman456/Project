@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Project.Services.Interfaces;
-using Project.ViewModels.Dashboard;
+using Project.ViewModels.VMDashboard;
 using ProjectData.Data;
 
 namespace Project.Services

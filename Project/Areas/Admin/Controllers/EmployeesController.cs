@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Services.Interfaces;
-
-
-using Project.ViewModels.Employee;
+using Project.ViewModels.VMEmployee;
 
 namespace Project.Areas.Admin.Controllers
 {

@@ -1,4 +1,4 @@
-﻿using Project.ViewModels.Dashboard;
+﻿using Project.ViewModels.VMDashboard;
 
 namespace Project.Services.Interfaces // 請確認您的命名空間
     {

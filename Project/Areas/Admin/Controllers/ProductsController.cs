@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Project.Data;
+
 using ProjectData.Models;
 using Project.Models.DTOs;
 using System;
@@ -200,7 +200,7 @@ namespace Project.Areas.Admin.Controllers
 
         // GET: Admin/Products/GetProductInfo/5
         [HttpGet]
-        [Authorize(Roles = "Salesperson")]
+      
         public async Task<IActionResult> GetProductInfo(int id)
         {
             var product = await _context.Product.FindAsync(id);
@@ -212,7 +212,7 @@ namespace Project.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Salesperson")]
+      
         public async Task<IActionResult> SearchProducts(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))

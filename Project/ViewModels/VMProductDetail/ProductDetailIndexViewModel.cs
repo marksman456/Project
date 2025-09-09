@@ -1,6 +1,6 @@
 ﻿using ProjectData.Models;
 
-namespace Project.ViewModels
+namespace Project.ViewModels.VMProductDetail
 {
     public class ProductDetailIndexViewModel
     {

@@ -1,4 +1,4 @@
-﻿@model Project.ViewModels.Quotation.QuotationViewModel
+﻿@model Project.ViewModels.VMQuotation.QuotationViewModel
 
 @{
     ViewData["Title"] = "編輯報價單";
@@ -81,7 +81,7 @@
                         </tr>
                     </thead>
                     <tbody id="quotationDetailsTableBody">
-                        @* 【修改重點】: 使用 for 迴圈載入已有的明細資料 *@
+                        @* 使用 for 迴圈載入已有的明細資料 *@
                         @for (int i = 0; i < Model.QuotationDetail.Count; i++)
                         {
                             var item = Model.QuotationDetail.ElementAt(i);
@@ -191,7 +191,7 @@
                 // 新增品項時的初始小計 (價格 * 1 * 1.0)
                 const initialSubtotal = selectedProduct.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-                // 【重點】: 新增的 HTML row 必須包含 Discount 欄位
+                // 新增的 HTML row 必須包含 Discount 欄位
                 const newRow = `
                     <tr>
                         <td>
@@ -229,14 +229,14 @@
             });
 
             // --- 表格內輸入事件 (核心修改) ---
-            // 【重點】: 監聽事件加入了 .discount-input
+            // 監聽事件加入了 .discount-input
             detailsTableBody.on('input', '.price-input, .quantity-input, .discount-input', function() {
                 const row = $(this).closest('tr');
                 const price = parseFloat(row.find('.price-input').val()) || 0;
                 const quantity = parseInt(row.find('.quantity-input').val()) || 0;
                 const discount = parseFloat(row.find('.discount-input').val()) || 1.0; // 如果折扣無效，預設為 1 (無折扣)
 
-                // 【重點】: 小計計算加入了 discount
+                //  小計計算加入了 discount
                 const subtotal = price * quantity * discount;
 
                 const formattedSubtotal = subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -245,7 +245,7 @@
                 calculateTotals();
             });
 
-            // --- 計算總計函式 (此部分邏輯不變) ---
+            // --- 計算總計函式  ---
             function calculateTotals() {
                 let grandTotal = 0;
                 detailsTableBody.find('tr').each(function() {
@@ -255,7 +255,7 @@
                 $('#grandTotal').text(grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
 
-            // --- 重新索引函式 (此部分邏輯不變) ---
+            // --- 重新索引函式  ---
             function reindexTableRows() {
                 detailsTableBody.find('tr').each(function(newIndex) {
                     $(this).find('input, select').each(function() {

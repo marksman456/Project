@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Project.Data;
+using ProjectData.Data;
 using Project.Services;
 using Project.Services.Interfaces;
-using ProjectData.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +25,9 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddScoped<IQuotationService, QuotationService>();
 
+builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 
 

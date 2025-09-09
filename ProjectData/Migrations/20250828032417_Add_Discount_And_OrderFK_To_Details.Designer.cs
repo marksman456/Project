@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Project.Data;
 using ProjectData.Data;
 
 #nullable disable
@@ -13,8 +12,8 @@ using ProjectData.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(XiangYunDbContext))]
-    [Migration("20250828024951_Add_Status_Note_TotalAmount_To_Order")]
-    partial class Add_Status_Note_TotalAmount_To_Order
+    [Migration("20250828032417_Add_Discount_And_OrderFK_To_Details")]
+    partial class Add_Discount_And_OrderFK_To_Details
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -193,10 +192,15 @@ namespace Project.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RelatedOrderID")
+                        .HasColumnType("int");
+
                     b.HasKey("MovementID")
                         .HasName("PK__Inventor__D1822466A7B0C9ED");
 
                     b.HasIndex("ProductDetailID");
+
+                    b.HasIndex("RelatedOrderID");
 
                     b.ToTable("InventoryMovement");
                 });
@@ -646,6 +650,10 @@ namespace Project.Migrations
                     b.Property<int>("ProductDetailID")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("Discount")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(12, 2)");
 
@@ -830,7 +838,13 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__Inventory__Produ__60A75C0F");
 
+                    b.HasOne("Project.Models.Order", "RelatedOrder")
+                        .WithMany()
+                        .HasForeignKey("RelatedOrderID");
+
                     b.Navigation("ProductDetail");
+
+                    b.Navigation("RelatedOrder");
                 });
 
             modelBuilder.Entity("Project.Models.ModelSpec", b =>

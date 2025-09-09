@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace Project.ViewModels.Quotation
+namespace Project.ViewModels.VMQuotation
 {
     public class QuotationViewModel : IValidatableObject
     {
