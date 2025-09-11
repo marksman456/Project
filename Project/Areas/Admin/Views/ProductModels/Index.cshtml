@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ProjectData.Models.ProductModel>
+
+@{
+    ViewData["Title"] = "產品型號";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create">新增產品型號</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductModelName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Brand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductModelName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            <td class="d-flex">
+                  
+                    <a asp-action="Details" asp-route-id="@item.ProductModelID" class="btn btn-sm btn-outline-info">詳細</a> 
+
+             <form asp-action="Delete" asp-route-id="@item.ProductModelID">
+                 <input type="submit" value="刪除" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除(@item.ProductModelName)嗎?')" />
+             </form>
+
+
+               
+
+               
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

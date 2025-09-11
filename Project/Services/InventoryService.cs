@@ -32,9 +32,16 @@ namespace Project.Services
 
         public async Task<ProductDetailCreateViewModel> PrepareNewStockInViewModelAsync()
         {
+            var products = await _context.Product
+                              .Include(p => p.ProductModel)      // 載入產品型號
+                              .ThenInclude(pm => pm.ModelSpec) // 再根據型號載入其規格
+                              .OrderBy(p => p.ProductName)
+                              .ToListAsync();
+
             return new ProductDetailCreateViewModel
             {
-                ProductList = new SelectList(await _context.Product.ToListAsync(), "ProductID", "ProductName")
+                ProductList = new SelectList(products, "ProductID", "ProductNameWithSpec"),
+               
             };
         }
 
@@ -45,6 +52,9 @@ namespace Project.Services
             {
                 throw new InvalidOperationException("找不到對應的產品系列。");
             }
+
+            string identifier; // 這個變數將儲存「真實序號」或「虛擬批號」
+            int quantityToSave;
 
             if (product.IsSerialized)
             {
@@ -57,16 +67,27 @@ namespace Project.Services
                 {
                     throw new InvalidOperationException("此產品序號已存在。");
                 }
+
+                identifier = viewModel.SerialNumber;
+                quantityToSave = 1;
+            }
+            else
+            {
+                // 對於批量商品，由系統產生一個唯一的「批號」
+                // 格式：BATCH-日期-GUID前8碼 (例如 BATCH-20250911-A8E5C1D3)
+                identifier = $"BATCH-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+                quantityToSave = viewModel.Quantity;
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                product.Price = viewModel.SalePrice; // 更新主檔最新成本
-                _context.Update(product);
 
                 if (product.IsSerialized)
                 {
+                    product.Price = viewModel.SalePrice;
+
+                    _context.Update(product);
                     var productDetail = new ProductDetail
                     {
                         ProductID = viewModel.ProductID,
@@ -75,7 +96,7 @@ namespace Project.Services
                         PurchaseCost = viewModel.PurchaseCost,
                         Price = viewModel.SalePrice, //儲存獨立售價
                         Status = "庫存中",
-                        Quantity = 1,
+                        Quantity = quantityToSave,
                     };
 
 
@@ -84,64 +105,49 @@ namespace Project.Services
                     {
                         MovementDate = DateTime.Now,
                         MovementType = "進貨",
-                        Quantity = 1,
+                        Quantity = quantityToSave,
                         ProductDetail = productDetail
                     };
 
                     _context.Add(movement);
                     _context.Add(productDetail);
                 }
-                else
-                {
-                    var existingStock = await _context.ProductDetail.FirstOrDefaultAsync(pd => pd.ProductID == viewModel.ProductID && pd.SerialNumber == null);
-
-                    InventoryMovement movement;
-                    if (existingStock != null)
-                    {
-                        // 如果庫存已存在，則更新數量
-                        existingStock.Quantity += viewModel.Quantity;
-                        _context.Update(existingStock);
-
-                        movement = new InventoryMovement
-                        {
-                            MovementDate = DateTime.Now,
-                            MovementType = "進貨",
-                            Quantity = viewModel.Quantity, // 異動數量是本次新增的數量
-                            ProductDetail = existingStock // 關聯到「已存在」的庫存紀錄
-                        };
-                    }
+              
+                    
                     else
                     {
                         var productDetail = new ProductDetail
                         {
                             ProductID = viewModel.ProductID,
-                            SerialNumber = null,
+                            SerialNumber = identifier,
                             PurchaseDate = viewModel.PurchaseDate,
                             PurchaseCost = viewModel.PurchaseCost,
-                            Price = viewModel.SalePrice, //儲存獨立售價
+                            Price = product.Price,
                             Status = "庫存中",
-                            Quantity = viewModel.Quantity
+                            Quantity = quantityToSave
                         };
 
-                        movement = new InventoryMovement
+                      var  movement = new InventoryMovement
                         {
                             MovementDate = DateTime.Now,
                             MovementType = "進貨",
-                            Quantity = productDetail.Quantity,
+                            Quantity = viewModel.Quantity,
                             ProductDetail = productDetail // 關聯到「即將新增」的庫存紀錄
                         };
 
                         _context.Add(productDetail); // 準備新增 ProductDetail
 
-                    }
-                    _context.Add(movement); // 準備新增 InventoryMovement
-                }
 
-                // 在這裡，一次性將所有準備好的變更寫入資料庫
+                        _context.Add(movement); // 準備新增 InventoryMovement
+                    }
+
+                    // 在這裡，一次性將所有準備好的變更寫入資料庫
+                  
+                
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
-
+            
             catch (Exception)
             {
                 // 如果發生任何錯誤，復原所有變更

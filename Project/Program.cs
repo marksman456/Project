@@ -4,7 +4,6 @@ using ProjectData.Data;
 using Project.Services;
 using Project.Services.Interfaces;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

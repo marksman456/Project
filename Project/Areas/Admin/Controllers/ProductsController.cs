@@ -64,7 +64,7 @@ namespace Project.Areas.Admin.Controllers
       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductSKU,ProductName,Description,ProductModelID,Price")] Product product, IFormFile? formFile)
+        public async Task<IActionResult> Create([Bind("ProductSKU,ProductName,Description,ProductModelID,Price,IsSerialized")] Product product, IFormFile? formFile)
         {
             if (!ModelState.IsValid)
             {

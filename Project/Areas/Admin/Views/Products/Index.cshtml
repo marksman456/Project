@@ -13,17 +13,17 @@
     <thead class="table-light">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ProductImage)
+                產品照片
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProductSKU)
+               產品SKU    
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProductName)
+                產品名稱
             </th>
            
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                產品售價
             </th>
             <th></th>
         </tr>
@@ -55,8 +55,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
-                <td>
+                <td >
                   
+                    
                     <a asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-sm btn-outline-primary">詳細</a>
 
                     <form asp-action="Delete" asp-route-id="@item.ProductID">

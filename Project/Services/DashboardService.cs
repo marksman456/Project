@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Services.Interfaces;
 using Project.ViewModels.VMDashboard;
 using ProjectData.Data;
+using ProjectData.Models;
 
 namespace Project.Services
 {
@@ -51,23 +52,53 @@ namespace Project.Services
                 .ToListAsync();
 
             // 3. 低庫存警示 (假設低於 10 件為低庫存)
-            var lowStockItems = await _context.ProductDetail
-                .Include(pd => pd.Product)
-                .Where(pd => !pd.Product.IsSerialized && pd.Quantity < 10 && pd.Status == "庫存中")
-                .OrderBy(pd => pd.Quantity)
-                .Take(5)
-                .ToListAsync();
+            var lowStockGroups = await _context.ProductDetail
+            .Include(pd => pd.Product)
+                .ThenInclude(p => p.ProductModel)
+                    .ThenInclude(pm => pm.ModelSpec)
+            .Where(pd => !pd.Product.IsSerialized && pd.Status == "庫存中")
+            .GroupBy(pd => new
+            {
+                pd.ProductID,
+                pd.Product.ProductModelID,
+                pd.PurchaseCost
+            })
+            .Select(g => new
+            {
+                ProductID = g.Key.ProductID,
+                ProductModelID = g.Key.ProductModelID,
+                PurchaseCost = g.Key.PurchaseCost,
+                TotalQuantity = g.Sum(x => x.Quantity),
+                // 取一筆代表性 ProductDetail（可用於顯示商品資訊與關聯）
+                SampleDetail = g.OrderBy(x => x.ProductDetailID).FirstOrDefault()
+            })
+            .Where(x => x.TotalQuantity < 10)
+            .OrderBy(x => x.TotalQuantity)
+            .Take(5)
+            .ToListAsync();
+
+            // 轉成 List<ProductDetail> 以相容原本 ViewModel
+            var lowStockItems = lowStockGroups
+                .Select(x =>
+                {
+                    var detail = x.SampleDetail;
+                    if (detail != null)
+                    {
+                        detail.Quantity = x.TotalQuantity; // 顯示加總後的數量
+                    }
+                    return detail;
+                })
+                .OfType<ProductDetail>() // 過濾 null 並正確型別
+                .ToList();
 
             return new DashboardViewModel
             {
-            
                 MonthlyRevenue = monthlyRevenue,
                 PendingOrdersCount = pendingOrdersCount,
                 QuotesTodayCount = quotesTodayCount,
                 TotalStockItemsCount = totalStockItemsCount,
                 RecentOrders = recentOrders,
                 LowStockItems = lowStockItems
-
             };
         }
     }

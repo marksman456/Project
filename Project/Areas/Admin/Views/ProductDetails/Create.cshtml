@@ -44,7 +44,8 @@
                 <span asp-validation-for="PurchaseCost" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
+           
+            <div id="SalePriceGroup" class="mb-3" style="display:none;">
                 <label asp-for="SalePrice" class="control-label"></label>
                 <input asp-for="SalePrice" class="form-control" />
                 <span asp-validation-for="SalePrice" class="text-danger"></span>
@@ -70,10 +71,11 @@
                 const productId = $(this).val();
                 const serialNumberGroup = $('#serialNumberGroup');
                 const quantityGroup = $('#quantityGroup');
-
+                 const SalePriceGroup = $('#SalePriceGroup');
                 // 先隱藏所有動態欄位
                 serialNumberGroup.hide();
                 quantityGroup.hide();
+                SalePriceGroup.hide();
 
                 if (productId) {
                     // 發送 AJAX 請求到 ProductsController 獲取產品資訊
@@ -85,11 +87,13 @@
                             if (product.isSerialized) {
                                 // 序號化商品：顯示序號欄位，數量永遠是 1
                                 serialNumberGroup.show();
+                                 SalePriceGroup.show();
                                 quantityGroup.hide();
                                 quantityGroup.find('input').val(1); // 將數量設為 1
                             } else {
                                 // 非序號化商品：顯示數量欄位，隱藏序號欄位
                                 quantityGroup.show();
+                                  SalePriceGroup.hide();
                                 serialNumberGroup.hide();
                                 serialNumberGroup.find('input').val(''); // 清空序號
                             }

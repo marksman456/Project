@@ -1,0 +1,54 @@
+﻿@model IEnumerable<ProjectData.Models.ModelSpec>
+
+@{
+    ViewData["Title"] = "規格列表";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create">新增規格</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Spec)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SpecValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductModel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Spec)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpecValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductModel.ProductModelName)
+            </td>
+            <td class="d-flex">
+                    
+                    <a asp-action="Details" asp-route-id="@item.ModelSpecID" class="btn btn-sm btn-outline-info">詳細</a>
+
+                 <form asp-action="Delete" asp-route-id="@item.ModelSpecID">
+
+                        <input type="submit" value="刪除" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除(@item.SpecValue)?')" />
+
+                 </form>
+
+               
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

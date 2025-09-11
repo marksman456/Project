@@ -27,6 +27,7 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Areas\User\" />
+    <Folder Include="wwwroot\Category\" />
   </ItemGroup>
 
   <ItemGroup>

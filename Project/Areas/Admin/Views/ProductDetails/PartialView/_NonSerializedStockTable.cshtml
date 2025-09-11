@@ -6,7 +6,8 @@
             <th>產品系列</th>
             <th class="text-center">庫存數量</th>
             <th>狀態</th>
-            <th class="text-end">平均成本</th>
+            <th>進貨成本</th>
+            <th class="text-end">售價</th>
             <th>最近進貨日</th>
             <th></th>
         </tr>
@@ -28,7 +29,8 @@
                         <span class="badge bg-secondary">@item.Status</span>
                     }
                 </td>
-                <td class="text-end">@item.PurchaseCost.ToString("N0")</td>
+                <td>@item.PurchaseCost.ToString("N0")</td>
+                <td class="text-end">@item.Price.ToString("N0")</td>
                 <td>@item.PurchaseDate?.ToString("yyyy-MM-dd")</td>
                
             </tr>

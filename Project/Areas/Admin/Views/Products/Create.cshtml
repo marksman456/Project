@@ -15,34 +15,38 @@
 
           
             <div class="form-group">
-                <label asp-for="ProductSKU" class="control-label"></label>
+                <label asp-for="ProductSKU" class="control-label">產品SKU</label>
                 <input asp-for="ProductSKU" class="form-control" />
                 <span asp-validation-for="ProductSKU" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
+                <label asp-for="ProductName" class="control-label">產品名稱</label>
                 <input asp-for="ProductName" class="form-control" />
                 <span asp-validation-for="ProductName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
+                <label asp-for="Description" class="control-label">產品描述</label>
                 <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProductModelID" class="control-label"></label>
+                <label asp-for="ProductModelID" class="control-label">產品對應模型</label>
                 <select asp-for="ProductModelID" class="form-control" asp-items="ViewBag.ProductModelId"></select>
                 <span asp-validation-for="ProductModelID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
+                <label asp-for="Price" class="control-label">價格</label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
 
-         
+            <div class="form-group form-check">
+                <input asp-for="IsSerialized" class="form-check-input" />
+                <label asp-for="IsSerialized" class="form-check-label">是否序號化</label>
+                <span asp-validation-for="IsSerialized" class="text-danger"></span>
+            </div>
             <div class="form-group">
-                <label asp-for="ProductImage" class="control-label"></label>
+                <label asp-for="ProductImage" class="control-label">產品照片</label>
             
                 <input type="file" name="formFile" id="formFile" class="form-control"  />
                 <span asp-validation-for="ProductImage" class="text-danger"></span>

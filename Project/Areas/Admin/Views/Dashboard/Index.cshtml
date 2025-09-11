@@ -134,6 +134,8 @@
                         {
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 @item.Product.ProductName
+                                @string.Join(", ", item.Product.ProductModel.ModelSpec.Select(ms => ms.Spec + ": " + ms.SpecValue))
+                              
                                 <span class="badge bg-warning rounded-pill">剩 @item.Quantity</span>
                             </li>
                         }
@@ -144,4 +146,3 @@
     </div>
 </div>
 
-@* 為了讓卡片邊框顏色和圖示生效，您可能需要在 _Layout.cshtml 中引入 Font Awesome 和一個小小的 CSS *@

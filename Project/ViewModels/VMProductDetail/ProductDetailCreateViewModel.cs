@@ -27,6 +27,7 @@ namespace Project.ViewModels.VMProductDetail
         public int Quantity { get; set; }
 
         [Display(Name = "預計售價")]
+        [Required(ErrorMessage = "請輸入預計售價")]
         public decimal SalePrice { get; set; } 
 
         // 用於提供給 View 建立下拉選單

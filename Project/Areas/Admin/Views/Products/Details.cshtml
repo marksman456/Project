@@ -36,13 +36,13 @@
                     </div>
 
                     <dl class="row mt-4">
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductModel.ProductModelName)</dt>
+                        <dt class="col-sm-4">產品型號名稱</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductModel.ProductModelName)</dd>
 
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductModel.Brand)</dt>
+                        <dt class="col-sm-4">品牌</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductModel.Brand)</dd>
 
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Description)</dt>
+                        <dt class="col-sm-4">描述</dt>
                         <dd class="col-sm-8">
                             @if (!string.IsNullOrEmpty(Model.Description))
                             {

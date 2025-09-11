@@ -60,10 +60,15 @@ namespace Project.Areas.Admin.Controllers
 
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
-                catch (Exception)
+                catch (Exception ex) // <--- 加上 ex 變數來接收例外物件
                 {
-                    // 捕捉其他未預期錯誤
-                    ModelState.AddModelError(string.Empty, "發生未預期的錯誤，請稍後再試。");
+                    // 為了偵錯，我們把最詳細的內部錯誤訊息也顯示出來
+                    string errorMessage = ex.Message;
+                    if (ex.InnerException != null)
+                    {
+                        errorMessage += " ---> " + ex.InnerException.Message;
+                    }
+                    ModelState.AddModelError(string.Empty, $"資料庫儲存失敗: {errorMessage}");
                 }
             }
             var repopulatedViewModel = await _inventoryService.PrepareNewStockInViewModelAsync();
