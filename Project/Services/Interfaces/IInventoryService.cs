@@ -6,7 +6,7 @@ namespace Project.Services.Interfaces
 {
     public interface IInventoryService
     {
-        Task<ProductDetailIndexViewModel> GetInventoryForIndexAsync();
+        Task<ProductDetailIndexViewModel> GetInventoryForIndexAsync(string? keyword, string? status);
         Task<ProductDetailCreateViewModel> PrepareNewStockInViewModelAsync();
         Task AddStockAsync(ProductDetailCreateViewModel viewModel);
     }

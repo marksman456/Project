@@ -38,7 +38,6 @@ public partial class Employee
 
     public virtual ICollection<ShippingOrder> ShippingOrder { get; set; } = new List<ShippingOrder>();
 
-    public virtual ICollection<Role> Role { get; set; } = new List<Role>();
 
     public string? UserId { get; set; } // 用來儲存 AspNetUsers 表的 Id
     public virtual IdentityUser? User { get; set; } // 導覽屬性

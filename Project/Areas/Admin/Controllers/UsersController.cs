@@ -7,7 +7,7 @@ using Project.ViewModels;
 namespace Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]//  [Authorize(Roles = "Admin")] 來限制只有管理員能訪問
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;

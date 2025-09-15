@@ -16,17 +16,40 @@ namespace Project.Services
             _context = context;
         }
 
-        public async Task<ProductDetailIndexViewModel> GetInventoryForIndexAsync()
+        public async Task<ProductDetailIndexViewModel> GetInventoryForIndexAsync(string? keyword, string? status)
         {
-            var allStock = await _context.ProductDetail
-                .Include(p => p.Product)
+            var query = _context.ProductDetail
+                                   .Include(p => p.Product)
+                                   .AsQueryable(); // 使用 AsQueryable() 來延遲執行，以便後續附加條件
+
+            // --- 動態加入篩選條件 ---
+
+            // 1. 根據「狀態」進行篩選
+            if (!string.IsNullOrEmpty(status) && status != "All")
+            {
+                query = query.Where(pd => pd.Status == status);
+            }
+
+            // 2. 根據「關鍵字」進行搜尋
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                // 這裡的 keyword 會同時搜尋產品名稱、SKU、以及最重要的 SerialNumber/批號
+                query = query.Where(pd =>
+                    pd.Product.ProductName.Contains(keyword) ||
+                    pd.SerialNumber.Contains(keyword) ||
+                    pd.Product.ProductSKU.Contains(keyword));
+            }
+
+            // 在所有條件都加上後，才執行查詢並排序
+            var filteredStock = await query
                 .OrderByDescending(p => p.PurchaseDate)
                 .ToListAsync();
 
+            // 後續的邏輯不變，將篩選後的結果，再分成兩種商品類型
             return new ProductDetailIndexViewModel
             {
-                SerializedItems = allStock.Where(p => p.Product.IsSerialized).ToList(),
-                NonSerializedItems = allStock.Where(p => !p.Product.IsSerialized).ToList()
+                SerializedItems = filteredStock.Where(p => p.Product.IsSerialized).ToList(),
+                NonSerializedItems = filteredStock.Where(p => !p.Product.IsSerialized).ToList()
             };
         }
 
@@ -85,7 +108,7 @@ namespace Project.Services
 
                 if (product.IsSerialized)
                 {
-                    product.Price = viewModel.SalePrice;
+                   
 
                     _context.Update(product);
                     var productDetail = new ProductDetail

@@ -1,4 +1,4 @@
-﻿@model ProjectData.Models.Product
+﻿@model Project.ViewModels.VMProduct.ProductEditViewModel
 
 @{
     ViewData["Title"] = "編輯商品";
@@ -13,7 +13,8 @@
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ProductID" />
-            <input type="hidden" asp-for="ProductImage" />
+            <input type="hidden" asp-for="ExistingImagePath"/>
+          
 
             <div class="row">
                
@@ -35,7 +36,7 @@
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="ProductModelID" class="control-label"></label>
-                        <select asp-for="ProductModelID" class="form-control" asp-items="ViewBag.ProductModelID"></select>
+                        <select asp-for="ProductModelID" class="form-control" asp-items="Model.ProductModelList"></select>
                         <span asp-validation-for="ProductModelID" class="text-danger"></span>
                     </div>
                     <div class="form-group mb-3">
@@ -49,7 +50,7 @@
                 <div class="col-md-5">
                     <div class="form-group mb-3">
                         <label class="control-label">更換圖片</label>
-                        <input type="file" name="formFile" id="formFile" class="form-control"/>
+                        <input asp-for="ProductImageFile" type ="file"  id="formFile" class="form-control" />
                     </div>
                     <div class="text-center">
                        

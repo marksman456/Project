@@ -34,7 +34,7 @@ public partial class Member
       };
     public string? Note { get; set; }
 
-    public virtual ICollection<Account> Account { get; set; } = new List<Account>();
+  
 
     public virtual ICollection<Order> Order { get; set; } = new List<Order>();
 

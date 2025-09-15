@@ -22,9 +22,16 @@ namespace Project.Areas.Admin.Controllers
 
         // GET: Admin/ProductDetails
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? keyword, string? status)
         {
-            var viewModel = await _inventoryService.GetInventoryForIndexAsync();
+            // 備註：將接收到的查詢條件，傳遞給 Service 層進行處理
+            // (下一步我們會去修改 Service，讓它能接收這兩個參數)
+            var viewModel = await _inventoryService.GetInventoryForIndexAsync(keyword, status);
+
+            // 備註：將查詢條件存入 ViewData，以便 View 可以讀取並保留使用者輸入的值
+            ViewData["CurrentKeyword"] = keyword;
+            ViewData["CurrentStatus"] = status ?? "All"; // 如果 status 是 null (第一次載入)，預設為 "All"
+
             return View(viewModel);
         }
 

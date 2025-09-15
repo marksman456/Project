@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Project.Areas.Admin.Controllers // 請確認您的命名空間
+namespace Project.Areas.Admin.Controllers 
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")] // 確保只有登入的使用者能訪問
+    [Authorize(Roles = "Admin")] 
     public class RolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
