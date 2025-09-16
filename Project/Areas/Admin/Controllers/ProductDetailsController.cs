@@ -24,11 +24,11 @@ namespace Project.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(string? keyword, string? status)
         {
-            // 備註：將接收到的查詢條件，傳遞給 Service 層進行處理
-            // (下一步我們會去修改 Service，讓它能接收這兩個參數)
+            // 將接收到的查詢條件，傳遞給 Service 層進行處理
+          
             var viewModel = await _inventoryService.GetInventoryForIndexAsync(keyword, status);
 
-            // 備註：將查詢條件存入 ViewData，以便 View 可以讀取並保留使用者輸入的值
+            // 將查詢條件存入 ViewData，以便 View 可以讀取並保留使用者輸入的值
             ViewData["CurrentKeyword"] = keyword;
             ViewData["CurrentStatus"] = status ?? "All"; // 如果 status 是 null (第一次載入)，預設為 "All"
 
@@ -67,9 +67,9 @@ namespace Project.Areas.Admin.Controllers
 
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
-                catch (Exception ex) // <--- 加上 ex 變數來接收例外物件
+                catch (Exception ex) // 加上 ex 變數來接收例外物件
                 {
-                    // 為了偵錯，我們把最詳細的內部錯誤訊息也顯示出來
+                    // 為了偵錯，最詳細的內部錯誤訊息也顯示出來
                     string errorMessage = ex.Message;
                     if (ex.InnerException != null)
                     {
