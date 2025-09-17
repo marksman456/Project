@@ -31,8 +31,8 @@
                     @Html.DisplayFor(modelItem => item.User.UserName)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.EmployeeID">編輯</a> |
-                    <a asp-action="Details" asp-route-id="@item.EmployeeID">詳細資料</a>
+
+                    <a asp-action="Details" asp-route-id="@item.EmployeeID" class="btn btn-sm btn-outline-primary">詳細資料</a>
                   
                 </td>
             </tr>

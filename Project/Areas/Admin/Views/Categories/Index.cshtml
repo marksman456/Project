@@ -50,7 +50,7 @@
             </td>
             <td class="d-flex">
                     
-                    <a asp-action="Details" asp-route-id="@item.CategoryID" class="btn btn-sm btn-outline-info">詳細</a> 
+                    <a asp-action="Details" asp-route-id="@item.CategoryID" class="btn btn-sm btn-outline-primary">詳細</a> 
                     <form asp-action="Delete" asp-route-id="@item.CategoryID">
 
                         <input type="submit" value="刪除" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除(@item.CategoryName)?')" />
