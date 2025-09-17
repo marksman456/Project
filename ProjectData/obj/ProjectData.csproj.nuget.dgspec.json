@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Project\\ProjectData\\ProjectData.csproj": {}
+    "E:\\專案(專題)\\AllProject\\ProjectData\\ProjectData.csproj": {}
   },
   "projects": {
-    "E:\\Project\\ProjectData\\ProjectData.csproj": {
+    "E:\\專案(專題)\\AllProject\\ProjectData\\ProjectData.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Project\\ProjectData\\ProjectData.csproj",
+        "projectUniqueName": "E:\\專案(專題)\\AllProject\\ProjectData\\ProjectData.csproj",
         "projectName": "ProjectData",
-        "projectPath": "E:\\Project\\ProjectData\\ProjectData.csproj",
-        "packagesPath": "C:\\Users\\Otis\\.nuget\\packages\\",
-        "outputPath": "E:\\Project\\ProjectData\\obj\\",
+        "projectPath": "E:\\專案(專題)\\AllProject\\ProjectData\\ProjectData.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "E:\\專案(專題)\\AllProject\\ProjectData\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Otis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -42,9 +42,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
+          "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -75,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
