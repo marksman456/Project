@@ -121,5 +121,10 @@
    在裡面新增一筆資料，並貼上您剛剛複製的兩個 Id：
    
    UserId 欄位： 貼上您 admin@example.com 帳號的 Id。
+   完成！
+
+   現在，請回到您的網站，用 admin@example.com 帳號重新登入一次。
+
+   您應該就能存取所有需要 Admin 權限的頁面了（例如「員工管理」、「產品管理」等）。
    
    RoleId 欄位： 貼上 "Admin" 角色的 Id。
