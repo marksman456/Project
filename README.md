@@ -102,29 +102,29 @@
    註冊成功後，請打開您的 SQL Server 資料庫管理工具 (如 SSMS)，並找到您專案的資料庫。
    
    尋找並複製 IDs
+      
+     * a. 尋找 UserId:
+      打開 dbo.AspNetUsers 資料表，找到您剛剛註冊的 admin@example.com 帳號，並將其 Id (一長串的 GUID 字串) 複製下來。
+      
+     *  b. 尋找 RoleId:
+      打開 dbo.AspNetRoles 資料表。
+      
+      如果裡面是空的，請手動新增兩筆資料：一筆的 Name 欄位為 "Admin"，另一筆為 "Salesperson"。
+      
+      然後，將 "Admin" 那一筆的 Id 複製下來。
+      
+      綁定使用者與角色 (完成步驟)
+      
+     * c. 綁定角色:
+      打開 dbo.AspNetUserRoles 資料表，這是一張關聯表。
+      
+      在裡面新增一筆資料，並貼上您剛剛複製的兩個 Id：
+      
+      UserId 欄位： 貼上您 admin@example.com 帳號的 Id。
+      完成！
    
-  * a. 尋找 UserId:
-   打開 dbo.AspNetUsers 資料表，找到您剛剛註冊的 admin@example.com 帳號，並將其 Id (一長串的 GUID 字串) 複製下來。
+      現在，請回到您的網站，用 admin@example.com 帳號重新登入一次。
    
-  *  b. 尋找 RoleId:
-   打開 dbo.AspNetRoles 資料表。
-   
-   如果裡面是空的，請手動新增兩筆資料：一筆的 Name 欄位為 "Admin"，另一筆為 "Salesperson"。
-   
-   然後，將 "Admin" 那一筆的 Id 複製下來。
-   
-   綁定使用者與角色 (完成步驟)
-   
-  * c. 綁定角色:
-   打開 dbo.AspNetUserRoles 資料表，這是一張關聯表。
-   
-   在裡面新增一筆資料，並貼上您剛剛複製的兩個 Id：
-   
-   UserId 欄位： 貼上您 admin@example.com 帳號的 Id。
-   完成！
-
-   現在，請回到您的網站，用 admin@example.com 帳號重新登入一次。
-
-   您應該就能存取所有需要 Admin 權限的頁面了（例如「員工管理」、「產品管理」等）。
-   
-   RoleId 欄位： 貼上 "Admin" 角色的 Id。
+      您應該就能存取所有需要 Admin 權限的頁面了（例如「員工管理」、「產品管理」等）。
+      
+      RoleId 欄位： 貼上 "Admin" 角色的 Id。
