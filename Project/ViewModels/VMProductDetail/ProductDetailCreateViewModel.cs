@@ -32,5 +32,8 @@ namespace Project.ViewModels.VMProductDetail
 
         // 用於提供給 View 建立下拉選單
         public SelectList? ProductList { get; set; }
+
+       
+
     }
 }

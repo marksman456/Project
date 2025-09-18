@@ -25,23 +25,22 @@ public partial class Product
     public virtual ICollection<ProductDetail> ProductDetail { get; set; } = new List<ProductDetail>();
 
     public virtual ProductModel ProductModel { get; set; } = null!;
+    //一個具體的商品，是由多個明確的規格所定義的。
+    public virtual ICollection<ModelSpec> Specs { get; set; } = new List<ModelSpec>();
 
-    [NotMapped] // 這個標籤告訴 EF Core：不要為這個屬性在資料庫中建立欄位
+    [NotMapped]
     public string ProductNameWithSpec
     {
         get
         {
-            // 檢查關聯的 ProductModel 和 ModelSpec 是否存在且有關聯資料
-            if (ProductModel?.ModelSpec == null || !ProductModel.ModelSpec.Any())
+            // 【核心修改】直接讀取已關聯的 Specs 集合，不再需要做任何文字比對
+            if (Specs == null || !Specs.Any())
             {
-                return ProductName; // 如果沒有規格，就只回傳產品名稱
+                return ProductName;
             }
 
-            // 將所有規格值用 ", " 串接起來
-            var specs = string.Join(", ", ProductModel.ModelSpec.Select(s => s.SpecValue));
-
-            // 組合成最終的顯示名稱 (例如: "產品名稱 (規格1, 規格2)")
-            return $"{ProductName} ({specs})";
+            var specsText = string.Join(", ", Specs.Select(s => s.SpecValue));
+            return $"{ProductName} ({specsText})";
         }
     }
 }

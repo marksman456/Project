@@ -1,4 +1,5 @@
 ﻿using Project.Models.DTOs;
+using Project.DTOs;
 using Project.ViewModels.VMProduct;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,5 +16,7 @@ namespace Project.Services.Interfaces
         Task UpdateProductAsync(ProductEditViewModel viewModel);
         Task DeleteProductAsync(int id);
         Task<List<ProductSearchDTO>> SearchAvailableProductsAsync(string keyword);
+
+        Task<List<SpecGroupDTO>> GetGroupedSpecsByModelIdAsync(int modelId);
     }
 }

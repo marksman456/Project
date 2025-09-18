@@ -168,7 +168,16 @@ namespace Project.Areas.Admin.Controllers
 
             return Json(products);
         }
-       
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetSpecsForModel(int modelId)
+        {
+            // Controller 的職責：呼叫 Service，並將結果轉成 Json
+            var specs = await _productService.GetGroupedSpecsByModelIdAsync(modelId);
+            return Json(specs);
+        }
+
     }
 
 }

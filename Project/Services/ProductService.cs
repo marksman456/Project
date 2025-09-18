@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Project.DTOs;
 using Project.Models.DTOs;
 using Project.Services.Interfaces;
 using Project.ViewModels.VMProduct;
@@ -28,7 +30,11 @@ namespace Project.Services
         // --- Read Operations ---
         public async Task<List<Product>> GetAllProductsAsync()
         {
-            return await _context.Product.Include(p => p.ProductModel).ToListAsync();
+            return await _context.Product
+         .Include(p => p.ProductModel) // 備註：保留對 ProductModel 的 Include，可能有用
+         .Include(p => p.Specs)      // 【核心修改】積極載入每一個產品所關聯的規格
+         .OrderBy(p => p.ProductName) // 加上排序，讓列表更整齊
+         .ToListAsync();
         }
 
         public async Task<Product?> GetProductByIdAsync(int id)
@@ -59,6 +65,18 @@ namespace Project.Services
                 IsSerialized = viewModel.IsSerialized,
                 // 預設為空，稍後處理圖片上傳
             };
+
+            if (viewModel.SelectedSpecIds != null && viewModel.SelectedSpecIds.Any())
+            {
+                // 根據傳入的 ID，從資料庫中找出對應的 ModelSpec 實體
+                var selectedSpecs = await _context.ModelSpec
+                    .Where(ms => viewModel.SelectedSpecIds.Contains(ms.ModelSpecID))
+                    .ToListAsync();
+
+                // 將找到的規格，加入到新產品的 Specs 集合中
+                product.Specs = selectedSpecs;
+            }
+
 
             if (viewModel.ProductImageFile != null)
             {
@@ -91,8 +109,10 @@ namespace Project.Services
 
         public async Task UpdateProductAsync(ProductEditViewModel viewModel)
         {
-            var product = await _context.Product.FindAsync(viewModel.ProductID);
-            if (product == null) throw new System.Exception("找不到該產品");
+            var product = await _context.Product
+        .Include(p => p.Specs)
+        .FirstOrDefaultAsync(p => p.ProductID == viewModel.ProductID);
+            if (product == null) throw new InvalidOperationException("找不到要更新的產品。");
 
             product.ProductSKU = viewModel.ProductSKU;
             product.ProductName = viewModel.ProductName;
@@ -103,8 +123,17 @@ namespace Project.Services
             // 處理圖片更新
             product.ProductImage = viewModel.ExistingImagePath; // 預設為現有圖片
 
+            product.Specs.Clear(); // 告訴 EF Core 準備移除所有舊的關聯
 
-            if (viewModel.ProductImageFile != null)
+            if (viewModel.SelectedSpecIds != null && viewModel.SelectedSpecIds.Any())
+            {
+                var selectedSpecs = await _context.ModelSpec
+                    .Where(ms => viewModel.SelectedSpecIds.Contains(ms.ModelSpecID))
+                    .ToListAsync();
+                product.Specs = selectedSpecs; // 告訴 EF Core 準備建立新的關聯
+            }
+
+            if (viewModel.ProductImageFile != null )
             {
                 if (!string.IsNullOrEmpty(product.ProductImage))
                 {
@@ -132,6 +161,26 @@ namespace Project.Services
             }
         }
 
+
+        public async Task<List<SpecGroupDTO>> GetGroupedSpecsByModelIdAsync(int modelId)
+        {
+            var specs = await _context.ModelSpec
+                .Where(ms => ms.ProductModelID == modelId)
+                .GroupBy(ms => ms.Spec) // 根據規格名稱分組 (例如 "顏色", "容量")
+                .Select(g => new SpecGroupDTO // 轉換為我們自訂的 DTO
+                {
+                    GroupName = g.Key,
+                    Specs = g.Select(s => new SpecItemDTO
+                    {
+                        ModelSpecID = s.ModelSpecID,
+                        SpecValue = s.SpecValue
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return specs;
+        }
+
         // --- Search API ---
         public async Task<List<ProductSearchDTO>> SearchAvailableProductsAsync(string keyword)
         {
@@ -142,21 +191,18 @@ namespace Project.Services
 
             var products = await _context.ProductDetail
                 .Include(pd => pd.Product)
-                    .ThenInclude(p => p.ProductModel)
-                        .ThenInclude(pm => pm.ModelSpec)
-                .Where(pd => pd.Status == "庫存中" &&
+                      .ThenInclude(p => p.Specs)
+                .Where(pd => pd.Status == "庫存中" && pd.Quantity > 0 &&
                     (
                         pd.Product.ProductName.Contains(keyword) ||
                         pd.Product.ProductSKU.Contains(keyword) ||
-                            (pd.Product.ProductModel != null && pd.Product.ProductModel.ModelSpec.Any(ms => ms.SpecValue.Contains(keyword)))
+                           pd.Product.Specs.Any(s => s.SpecValue.Contains(keyword))
                     )
                 )
                 .Select(pd => new ProductSearchDTO
                 {
                     ProductDetailID = pd.ProductDetailID,
-                    Label = (pd.Product.ProductModel != null && pd.Product.ProductModel.ModelSpec.Any())
-                    ? pd.Product.ProductName + " (" + string.Join(", ", pd.Product.ProductModel.ModelSpec.Select(ms => ms.SpecValue)) + ")" + (pd.SerialNumber != null && pd.SerialNumber.StartsWith("BATCH-") ? " - 批號:" + pd.SerialNumber.Substring(20) : "")
-                    : pd.Product.ProductName + (pd.SerialNumber != null && pd.SerialNumber.StartsWith("BATCH-") ? " - 批號:" + pd.SerialNumber.Substring(20) : ""),
+                    Label = pd.Product.ProductNameWithSpec,
                     Price = pd.Price,
                 })
                 .Take(10)

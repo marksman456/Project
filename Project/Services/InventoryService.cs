@@ -56,15 +56,15 @@ namespace Project.Services
         public async Task<ProductDetailCreateViewModel> PrepareNewStockInViewModelAsync()
         {
             var products = await _context.Product
-                              .Include(p => p.ProductModel)      // 載入產品型號
-                              .ThenInclude(pm => pm.ModelSpec) // 再根據型號載入其規格
-                              .OrderBy(p => p.ProductName)
-                              .ToListAsync();
+                           //透過 Include，一併將每個產品關聯的 Specs 讀取出來
+                           .Include(p => p.Specs)
+                           .OrderBy(p => p.ProductName)
+                           .ToListAsync();
 
             return new ProductDetailCreateViewModel
             {
                 ProductList = new SelectList(products, "ProductID", "ProductNameWithSpec"),
-               
+                PurchaseDate = DateOnly.FromDateTime(DateTime.Now)
             };
         }
 

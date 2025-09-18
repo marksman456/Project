@@ -37,5 +37,7 @@ namespace Project.ViewModels.VMProduct
 
         // 備註：用於在 View 中產生「產品型號」的下拉選單。
         public SelectList? ProductModelList { get; set; }
+
+        public List<int> SelectedSpecIds { get; set; } = new();
     }
 }
