@@ -23,3 +23,16 @@ E:\專案(專題)\AllProject\ProjectData\obj\Debug\net8.0\ProjectData.dll
 E:\專案(專題)\AllProject\ProjectData\obj\Debug\net8.0\refint\ProjectData.dll
 E:\專案(專題)\AllProject\ProjectData\obj\Debug\net8.0\ProjectData.pdb
 E:\專案(專題)\AllProject\ProjectData\obj\Debug\net8.0\ref\ProjectData.dll
+E:\Project\ProjectData\bin\Debug\net8.0\ProjectData.deps.json
+E:\Project\ProjectData\bin\Debug\net8.0\ProjectData.dll
+E:\Project\ProjectData\bin\Debug\net8.0\ProjectData.pdb
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.csproj.AssemblyReference.cache
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.GeneratedMSBuildEditorConfig.editorconfig
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.AssemblyInfoInputs.cache
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.AssemblyInfo.cs
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.csproj.CoreCompileInputs.cache
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.sourcelink.json
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.dll
+E:\Project\ProjectData\obj\Debug\net8.0\refint\ProjectData.dll
+E:\Project\ProjectData\obj\Debug\net8.0\ProjectData.pdb
+E:\Project\ProjectData\obj\Debug\net8.0\ref\ProjectData.dll
