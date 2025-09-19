@@ -159,14 +159,18 @@ namespace Project.Services
         {
             var order = await _context.Order.FindAsync(id);
 
-            if (order == null || order.Status != "訂單成立")
+            if (order == null || (order.Status != "訂單成立" && order.Status != "已出貨"))
             {
                 return false;
             }
 
+            if (order.IsPaid)
+            {
+                return true;
+            }
 
             order.IsPaid = true;
-            order.Status = "待出貨";
+            
             _context.Update(order);
             await _context.SaveChangesAsync();
 
@@ -179,7 +183,7 @@ namespace Project.Services
 
             var order = await _context.Order.FindAsync(id);
 
-            if (order == null || order.Status != "待出貨")
+            if (order == null || (order.Status != "待出貨" && order.Status != "訂單成立"))
             {
                 return false; // 訂單不存在或狀態不符，操作失敗
             }

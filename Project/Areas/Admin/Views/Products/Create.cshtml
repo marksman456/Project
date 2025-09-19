@@ -35,9 +35,9 @@
                 <span asp-validation-for="ProductModelID" class="text-danger"></span>
             </div>
 
-            <div id="specsContainer" class="mt-3">
+            <div id="specsContainer" class="mt-3"></div>
 
-            </div>
+            
 
             <div class="form-group">
                 <label asp-for="Price" class="control-label">價格</label>
@@ -53,7 +53,7 @@
             <div class="form-group">
                 <label asp-for="ProductImageFile" class="control-label">產品照片</label>
             
-                <input asp-for="ProductImageFile" type="file"  id="formFile" class="form-control" />
+                <input asp-for="ProductImageFile" type="file"   class="form-control" />
                 <span asp-validation-for="ProductImageFile" class="text-danger"></span>
               
             </div>
@@ -84,33 +84,61 @@
     }
 
     <script>
-        // 備註：只需要一個 document.ready 來包裹所有頁面載入後要執行的功能
         $(document).ready(function () {
 
-            // --- 功能一：動態載入規格 ---
-            $('#ProductModelID').on('change', function () {
-                var modelId = $(this).val();
-                var specsContainer = $('#specsContainer');
-                specsContainer.empty(); // 清空舊的規格
+               var productModelDropdown = $('#ProductModelID');
+               var specsContainer = $('#specsContainer');
 
-                if (modelId) {
-                    $.getJSON('/Admin/Products/GetSpecsForModel?modelId=' + modelId, function (data) {
-                        if (data && data.length > 0) {
-                            $.each(data, function (i, group) {
-                                var groupHtml = '<div class="mb-3"><h5>' + group.groupName + '</h5>';
-                                $.each(group.specs, function(j, spec) {
-                                    groupHtml += '<div class="form-check form-check-inline">';
-                                    groupHtml += '<input class="form-check-input" type="checkbox" name="SelectedSpecIds" value="' + spec.modelSpecID + '" id="spec' + spec.modelSpecID + '">';
-                                    groupHtml += '<label class="form-check-label" for="spec' + spec.modelSpecID + '">' + spec.specValue + '</label>';
-                                    groupHtml += '</div>';
-                                });
-                                groupHtml += '</div>';
-                                specsContainer.append(groupHtml);
-                            });
-                        }
-                    });
-                }
-            });
+               
+               function loadSpecsForModel() {
+                   var modelId = productModelDropdown.val();
+                   specsContainer.empty(); // 每次都先清空
+
+                   if (modelId) {
+                       console.log("正在為 Model ID: " + modelId + " 載入規格...");
+                       $.getJSON('/Admin/Products/GetSpecsForModel?modelId=' + modelId, function (data) {
+                           if (data && data.length > 0) {
+                               // ... (這裡的 $.each 邏輯完全不變) ...
+                               $.each(data, function (i, group) {
+                                   var groupHtml = '<div class="mb-3"><h5>' + group.groupName + '</h5>';
+                                   $.each(group.specs, function(j, spec) {
+                                       groupHtml += '<div class="form-check form-check-inline">';
+                                       groupHtml += '<input class="form-check-input" type="checkbox" name="SelectedSpecIds" value="' + spec.modelSpecID + '" id="spec' + spec.modelSpecID + '">';
+                                       groupHtml += '<label class="form-check-label" for="spec' + spec.modelSpecID + '">' + spec.specValue + '</label>';
+                                       groupHtml += '</div>';
+                                   });
+                                   groupHtml += '</div>';
+                                   specsContainer.append(groupHtml);
+                               });
+                           }
+                       });
+                   }
+               }
+               
+               // 當使用者「手動」改變選項時，呼叫我們的函式
+               productModelDropdown.on('change', loadSpecsForModel);
+
+               
+               // 檢查頁面載入時，下拉選單是否已經有值
+               if (productModelDropdown.val()) {
+                   console.log("頁面載入時偵測到已有選定模型，手動觸發規格載入...");
+                   loadSpecsForModel(); // 直接呼叫函式來載入初始規格
+               }
+
+               // --- 圖片上傳預覽 ---
+               $('#ProductImageFile').on('change', function (event) {
+                   if (this.files && this.files[0]) {
+                       var reader = new FileReader();
+                       reader.onload = function (e) {
+                           $('#imagePreview').attr('src', e.target.result).show();
+                       };
+                       reader.readAsDataURL(this.files[0]);
+                   } else {
+                       $('#imagePreview').attr('src', '#').hide();
+                   }
+               });
+
+        
 
             // --- 功能二：圖片上傳預覽 ---
             // 備註：選擇器已修正為 #ProductImageFile，與 asp-for="ProductImageFile" 保持一致
@@ -127,8 +155,9 @@
                     $('#imagePreview').attr('src', '#').hide();
                 }
             });
-
-        });
+      });
+      
+      
     </script>
 }
 

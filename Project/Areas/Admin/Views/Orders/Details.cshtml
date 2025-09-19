@@ -104,7 +104,7 @@
     </form>
 }
 
-@if (Model.Status == "待出貨" && User.IsInRole("Admin"))
+@if (Model.Status == "待出貨" || Model.Status == "訂單成立" && User.IsInRole("Admin"))
 {
     <form asp-action="MarkAsShipped" asp-route-id="@Model.OrderID" method="post" class="d-inline">
         <button type="submit" class="btn btn-info" onclick="return confirm('您確定要將此訂單標記為「已出貨」嗎？')">
