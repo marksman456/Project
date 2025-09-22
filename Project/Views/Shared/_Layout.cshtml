@@ -23,18 +23,21 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (SignInManager.IsSignedIn(User)){
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin") || User.IsInRole("Salesperson"))
+                        {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 後台管理
-                            </a>
-                            <ul class="dropdown-menu">
+                                </a>
+                        
+
+                            <ul class="dropdown-menu" >
                                 @* ========== 銷售與營運 (所有後台人員可見) ========== *@
                                 <li><a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">儀表板</a></li>
                                 <li><a class="dropdown-item" asp-area="Admin" asp-controller="Quotations" asp-action="Index">報價單管理</a></li>
                                 <li><a class="dropdown-item" asp-area="Admin" asp-controller="Orders" asp-action="Index">訂單管理</a></li>
                                 <li><a class="dropdown-item" asp-area="Admin" asp-controller="Members" asp-action="Index">客戶管理</a></li>
-
+                         
                                 @* ========== 核心系統管理 (僅限 Admin 可見) ========== *@
                                 @if (User.IsInRole("Admin"))
                                 {

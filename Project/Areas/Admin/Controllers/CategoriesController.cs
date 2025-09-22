@@ -92,6 +92,14 @@ namespace Project.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            var statusList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "啟用", Text = "啟用" },
+                new SelectListItem { Value = "停用", Text = "停用" }
+            };
+
+            ViewBag.StatusList = statusList;
+
             return View(category);
         }
 
@@ -100,9 +108,9 @@ namespace Project.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryID,CategoryName,Description,CategoryImage,Status,CreatedDate")] Category category)
+           public async Task<IActionResult> Edit(int id, [Bind("CategoryID,CategoryName,Description,Status")] Category formData)
         {
-            if (id != category.CategoryID)
+            if (id != formData.CategoryID)
             {
                 return NotFound();
             }
@@ -111,12 +119,24 @@ namespace Project.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(category);
+                 
+                    var categoryToUpdate = await _context.Category.FindAsync(id);
+                    if (categoryToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+
+                  
+                    categoryToUpdate.CategoryName = formData.CategoryName;
+                    categoryToUpdate.Description = formData.Description;
+                    categoryToUpdate.Status = formData.Status;
+
+                   
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.CategoryID))
+                    if (!CategoryExists(formData.CategoryID))
                     {
                         return NotFound();
                     }
@@ -127,7 +147,10 @@ namespace Project.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+
+            // 如果驗證失敗，需要重新準備 ViewBag.StatusList
+            ViewBag.StatusList = new SelectList(new[] { "啟用", "停用" }, formData.Status);
+            return View(formData);
         }
 
         // GET: Admin/Categories/Delete/5

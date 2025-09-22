@@ -12,7 +12,7 @@ using static Project.ViewModels.VMQuotation.QuotationViewModel;
 namespace Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles = "Admin,Salesperson")]
     public class QuotationsController : Controller
     {
         private readonly IQuotationService _quotationService;
