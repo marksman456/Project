@@ -28,7 +28,7 @@ namespace Project.Services
                 .SumAsync(o => o.TotalAmount);
 
             int pendingOrdersCount = await _context.Order
-                .CountAsync(o => o.Status == "待出貨");
+                .CountAsync(o => o.Status == "訂單成立");
 
             int quotesTodayCount = await _context.Quotation
                 .CountAsync(q => q.CreatedDate.Year == today.Year && q.CreatedDate.Month == today.Month && q.CreatedDate.Day == today.Day);
